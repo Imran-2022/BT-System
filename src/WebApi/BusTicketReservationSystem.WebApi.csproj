@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="9.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
@@ -16,5 +18,11 @@
     <ProjectReference Include="..\Application.Contracts\BusTicketReservationSystem.Application.Contracts.csproj" />
     <ProjectReference Include="..\Infrastructure\BusTicketReservationSystem.Infrastructure.csproj" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <SpaRoot>../ClientApp/</SpaRoot> 
+    
+    <SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>
+</PropertyGroup>
 
 </Project>
