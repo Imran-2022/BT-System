@@ -3,10 +3,12 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true, // Assuming standalone is default
+  // Add RouterOutlet to imports so routing works
+  imports: [RouterOutlet], 
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('ClientApp');
+  // We don't need the title signal anymore, as content is in the router-outlet
 }
