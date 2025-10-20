@@ -1,0 +1,52 @@
+############################
+## General Ignored Files
+############################
+# Common OS files
+.DS_Store
+Thumbs.db
+Icon?
+
+# IDE and Editor files
+.vscode/        # VS Code settings (unless shared configuration is needed)
+*.suo           # Visual Studio User Options
+*.user          # VS User files
+*.bak           # Backup files
+*.log
+*.vs/           # Visual Studio Solution User Options folder
+
+############################
+## 1. .NET Backend (.NET 9)
+############################
+
+# Binaries and temporary output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# Packages and dependency files
+*.pdb           # Program Database files
+*.idb
+*.ncb
+*.scc
+*.vspscc
+*.vssscc
+*.tmp
+*.csproj.user
+*.resharper
+*.dotSettings
+
+# NuGet packages (often restored to a central location, but good to ignore)
+**/packages/*
+
+# Entity Framework Core Migrations files (Generated SQL and snapshosts, only ignore if not needed for deployment)
+# NOTE: The actual migration C# files MUST be kept, but generated output is ignored.
+**/Migrations/*.Designer.cs # Keep the core C# migration files
+
+# Compiled Razor/Blazor views
+*.cshtml.g.cs
+
+# User Secrets (sensitive data)
+appsettings.Development.json
+appsettings.Local.json
+.vscode/launch.json # Often contains local environment variables or paths
