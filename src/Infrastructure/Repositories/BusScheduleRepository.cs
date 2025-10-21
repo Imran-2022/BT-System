@@ -54,29 +54,89 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             return schedules;
         }
 
+        // Inside BusScheduleRepository class
+
+        // --- NEW HELPER METHOD ---
+        private async Task InitializeSeatStatusesAsync(Guid busScheduleId, decimal basePrice)
+        {
+            // Generates 32 seats: A1, A2, A3, A4... H1, H2, H3, H4
+            var seatStatuses = new List<SeatStatus>();
+            var seatLetters = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+
+            foreach (var rowLetter in seatLetters)
+            {
+                for (int seatIndex = 1; seatIndex <= 4; seatIndex++)
+                {
+                    seatStatuses.Add(new SeatStatus
+                    {
+                        BusScheduleId = busScheduleId,
+                        SeatNumber = $"{rowLetter}{seatIndex}",
+                        Status = (int)SeatStatusCode.Available,
+                        Price = basePrice
+                    });
+                }
+            }
+
+            await _context.SeatStatuses.AddRangeAsync(seatStatuses);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<AvailableBusDto?> GetBusScheduleByIdAsync(Guid busScheduleId)
         {
-            var schedule = await _context.BusSchedules
-                .AsNoTracking()
+            // Step 1: Check if the schedule exists and has existing seats
+            var scheduleWithSeats = await _context.BusSchedules
                 .Include(s => s.Route)
                 .Include(s => s.Bus)
-                .Where(s => s.BusScheduleId == busScheduleId) // Filter by the ID
-                .Select(s => new AvailableBusDto // Re-use your DTO for consistency
-                {
-                    BusScheduleId = s.BusScheduleId,
-                    CompanyName = s.Bus.CompanyName,
-                    BusName = s.Bus.BusName,
-                    BusType = s.Bus.BusType,
-                    StartTime = s.StartTime,
-                    BoardingPoint = "Kallyanpur", // Placeholder
-                    ArrivalTime = s.StartTime.Add(TimeSpan.FromHours(5)), // Placeholder
-                    DroppingPoint = "Rajshahi Counter", // Placeholder
-                    SeatsLeft = s.Bus.TotalSeats, // Placeholder
-                    Price = 700, // Placeholder
-                    CancellationPolicy = "Standard Policy"
-                })
-                .FirstOrDefaultAsync(); // Get just the first result
-            return schedule;
+                .Include(s => s.SeatStatuses) // <--- INCLUDE THE NEW TABLE
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.BusScheduleId == busScheduleId);
+
+            // Step 2: TEMPORARY SEEDING - If schedule exists but has NO seats, create them
+            if (scheduleWithSeats != null && scheduleWithSeats.SeatStatuses.Count == 0)
+            {
+                // Use the hardcoded price for simplicity
+                decimal basePrice = 700;
+
+                // Note: InitializeSeatStatusesAsync will save changes to the DB.
+                await InitializeSeatStatusesAsync(busScheduleId, basePrice);
+
+                // Refetch the schedule with the new seats (turning off AsNoTracking for the refetch)
+                scheduleWithSeats = await _context.BusSchedules
+                    .Include(s => s.Route)
+                    .Include(s => s.Bus)
+                    .Include(s => s.SeatStatuses)
+                    .FirstOrDefaultAsync(s => s.BusScheduleId == busScheduleId);
+            }
+
+            // Step 3: Projection to DTO
+            if (scheduleWithSeats == null) return null;
+
+            var dto = new AvailableBusDto
+            {
+                BusScheduleId = scheduleWithSeats.BusScheduleId,
+                CompanyName = scheduleWithSeats.Bus.CompanyName,
+                BusName = scheduleWithSeats.Bus.BusName,
+                BusType = scheduleWithSeats.Bus.BusType,
+                StartTime = scheduleWithSeats.StartTime,
+                // Use hardcoded data for now
+                BoardingPoint = "Kallyanpur",
+                ArrivalTime = scheduleWithSeats.StartTime.Add(TimeSpan.FromHours(5)),
+                DroppingPoint = "Rajshahi Counter",
+                SeatsLeft = scheduleWithSeats.Bus.TotalSeats, // Needs update with real logic later
+                Price = 700,
+                CancellationPolicy = "Standard Policy",
+
+                // --- NEW SEAT LAYOUT PROJECTION ---
+                SeatLayout = scheduleWithSeats.SeatStatuses
+                    .Select(ss => new SeatStatusDto
+                    {
+                        SeatNumber = ss.SeatNumber,
+                        Status = ss.Status,
+                        Price = ss.Price
+                    }).ToList()
+            };
+
+            return dto;
         }
     }
 

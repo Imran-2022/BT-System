@@ -10,10 +10,19 @@ export interface AvailableBus {
   seatsLeft: number;
   price: number;
   cancellationPolicy: string;
+  seatLayout: SeatStatus[]; 
+
 }
 
 export interface SearchQuery {
     from: string;
     to: string;
     journeyDate: string; // YYYY-MM-DD
+}
+
+// --- NEW INTERFACE ---
+export interface SeatStatus {
+    seatNumber: string;
+    status: number; // 1: Available, 2: Blocked, etc.
+    price: number;
 }

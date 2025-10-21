@@ -11,7 +11,8 @@ namespace BusTicketReservationSystem.Infrastructure.Data
         public DbSet<BusSchedule> BusSchedules { get; set; }
         public DbSet<Route> Routes { get; set; }
         public DbSet<Bus> Buses { get; set; }
-
+// --- NEW DbSet ---
+        public DbSet<SeatStatus> SeatStatuses { get; set; } // <--- ADD THIS LINE
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

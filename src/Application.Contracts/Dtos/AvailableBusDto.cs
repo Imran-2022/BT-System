@@ -16,5 +16,7 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
         public int SeatsLeft { get; set; } 
         public decimal Price { get; set; }
         public string CancellationPolicy { get; set; } = default!;
+        // --- NEW PROPERTY ---
+        public List<SeatStatusDto> SeatLayout { get; set; } = new List<SeatStatusDto>();
     }
 }

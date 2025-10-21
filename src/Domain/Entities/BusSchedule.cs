@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BusTicketReservationSystem.Domain.Entities
 {
@@ -13,5 +14,7 @@ namespace BusTicketReservationSystem.Domain.Entities
         // Navigation properties (Foreign Keys)
         public Route Route { get; set; } = default!;
         public Bus Bus { get; set; } = default!;
+        // --- NEW NAVIGATION PROPERTY ---
+        public ICollection<SeatStatus> SeatStatuses { get; set; } = new List<SeatStatus>();
     }
 }
