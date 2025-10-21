@@ -20,4 +20,19 @@ export class ApiService {
     // Example: http://localhost:5106/api/search?from=Dhaka...
     return this.http.get<T>(`${this.baseUrl}/${path}`, { params });
   }
+  // ------------------------------------------------------------------
+  // 🎯 NEW: POST METHOD FOR DATA SUBMISSION (Booking)
+  // ------------------------------------------------------------------
+  /**
+   * Performs a POST request to the API with a request body.
+   * @param path The endpoint path (e.g., 'Bookings/BookSeat').
+   * @param body The data payload (DTO) to be sent.
+   * @returns An Observable of the API response (e.g., BookingResponseDto).
+   */
+  post<T>(path: string, body: any): Observable<T> {
+    // Example: POST http://localhost:5106/api/Bookings/BookSeat
+    console.log("body",body);
+
+    return this.http.post<T>(`${this.baseUrl}/${path}`, body);
+  }
 }

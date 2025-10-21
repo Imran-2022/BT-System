@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from '../../../core/services/api';
-import { AvailableBus, SearchQuery } from '../models/available-bus.model';
+import { AvailableBus, SearchQuery,BookSeatInputDto,BookingResponseDto } from '../models/available-bus.model';
 import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 
@@ -36,5 +36,19 @@ export class SearchService {
   getBusDetails(id: string): Observable<AvailableBus> {
     // The endpoint is GET /api/Search/{id}
     return this.apiService.get<AvailableBus>(`search/${id}`);
+  }
+  // ------------------------------------------------------------------
+// NEW METHOD: Book selected seats
+// ------------------------------------------------------------------
+  /**
+   * Sends the booking request to the backend API.
+   * @param input The booking payload (DTO).
+   * @returns An Observable of the booking response.
+   */
+  bookSeats(input: BookSeatInputDto): Observable<BookingResponseDto> {
+      // Endpoint should be something like POST /api/Bookings/BookSeat
+      return this.apiService.post<BookingResponseDto>('Bookings/BookSeat', input);
+      
+      // NOTE: Your backend (C# Task BookSeatAsync) should map to this POST request.
   }
 }

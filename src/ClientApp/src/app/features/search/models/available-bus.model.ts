@@ -1,3 +1,5 @@
+import { Observable } from "rxjs";
+
 export interface AvailableBus {
   busScheduleId: string;
   companyName: string;
@@ -25,4 +27,32 @@ export interface SeatStatus {
     seatNumber: string;
     status: number; // 1: Available, 2: Blocked, etc.
     price: number;
+}
+
+// --- NEW INTERFACES FOR BOOKING ---
+
+export interface SeatBookingItemDto {
+    seatNumber: string;
+    price: number;
+}
+
+/**
+ * The Data Transfer Object for the BookSeat API call.
+ * This is what the frontend sends to the backend.
+ */
+export interface BookSeatInputDto {
+    scheduleId: string;
+    boardingPoint: string;
+    droppingPoint: string;
+    mobileNumber: string;
+    seatBookings: SeatBookingItemDto[];
+}
+
+/**
+ * The expected response from a successful booking API call.
+ */
+export interface BookingResponseDto {
+    bookingId: string;
+    message: string;
+    status: 'Success' | 'Failure';
 }
