@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 // CRITICAL: Import your component using its correct relative path
 import { SearchFormComponent } from './features/search/components/search-form/search-form'; 
+import { BusDetails } from './bus-details/bus-details';
 
 export const routes: Routes = [
     {
@@ -13,5 +14,9 @@ export const routes: Routes = [
         path: 'search',
         // Load the SearchFormComponent when the path is /search
         component: SearchFormComponent
+    },
+    {
+        path: 'bus/:id', 
+        component: BusDetails
     }
 ];

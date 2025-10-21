@@ -6,13 +6,15 @@
     <div *ngIf="buses.length === 0" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
         <p class="font-bold">No Buses Found</p>
         <p>
-            Please verify your search details, especially the **Date of Journey** (e.g., check for 2025-10-23 to see seeded data), or try a different route.
+            Please verify your search details, especially the **Date of Journey** (e.g., check for 2025-10-23 to see
+            seeded data), or try a different route.
         </p>
     </div>
 
     <div *ngIf="buses.length > 0" class="space-y-4">
-        <div *ngFor="let bus of buses" class="bg-white border rounded-lg shadow-md hover:shadow-xl transition duration-300 p-5 grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
-            
+        <div *ngFor="let bus of buses"
+            class="bg-white border rounded-lg shadow-md hover:shadow-xl transition duration-300 p-5 grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
+
             <div class="col-span-2">
                 <p class="text-xl font-bold text-gray-800">{{ bus.companyName }}</p>
                 <p class="text-sm text-gray-500">{{ bus.busName }}</p>
@@ -24,7 +26,7 @@
                 <p class="text-2xl font-bold text-green-600">{{ bus.startTime | slice:0:5 }}</p>
                 <p class="text-sm text-gray-600">{{ bus.boardingPoint }}</p>
             </div>
-            
+
             <div class="text-center text-gray-500">
                 <p class="text-xs">({{ bus.arrivalTime | slice:0:5 }} Arrival)</p>
                 <p class="text-sm">---</p>
@@ -32,15 +34,17 @@
             </div>
 
             <div class="text-center">
-                 <p class="text-lg font-semibold" [ngClass]="{'text-red-500': bus.seatsLeft < 10, 'text-green-500': bus.seatsLeft >= 10}">
+                <p class="text-lg font-semibold"
+                    [ngClass]="{'text-red-500': bus.seatsLeft < 10, 'text-green-500': bus.seatsLeft >= 10}">
                     {{ bus.seatsLeft }} Seats Left
                 </p>
             </div>
 
             <div class="text-right">
                 <p class="text-2xl font-bold text-red-600">৳{{ bus.price | number:'1.2-2' }}</p>
-                
-                <button class="mt-2 w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition">
+
+                <button class="mt-2 w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition"
+                    [routerLink]="['/bus', bus.busScheduleId]" title="View Seats">
                     View Seats
                 </button>
             </div>
