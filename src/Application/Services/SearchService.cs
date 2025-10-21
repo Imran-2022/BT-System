@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace BusTicketReservationSystem.Application.Services
 {
@@ -23,14 +24,29 @@ namespace BusTicketReservationSystem.Application.Services
             if (journeyDate.Date < DateTime.Today.Date)
             {
                 // In a real system, you'd throw a domain/application exception.
-                return new List<AvailableBusDto>(); 
+                return new List<AvailableBusDto>();
             }
-            
+
             // Delegate data retrieval to the Infrastructure layer (Repository)
             var results = await _busScheduleRepository.FindAvailableBusesAsync(from, to, journeyDate);
 
             // Application-level sorting/filtering (e.g., sort by StartTime)
             return results.OrderBy(b => b.StartTime).ToList();
+        }
+
+        // ------------------------------------------------------------------
+        // NEW METHOD IMPLEMENTATION: Required for the "View Seats" feature
+        // ------------------------------------------------------------------
+        public async Task<AvailableBusDto?> GetScheduleDetailsAsync(Guid scheduleId)
+        {
+            if (scheduleId == Guid.Empty)
+            {
+                // Handle invalid input at the service layer
+                return null;
+            }
+
+            // Delegate data retrieval to the Repository
+            return await _busScheduleRepository.GetBusScheduleByIdAsync(scheduleId);
         }
     }
 }

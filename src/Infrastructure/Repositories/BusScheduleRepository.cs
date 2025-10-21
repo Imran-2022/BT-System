@@ -3,7 +3,7 @@ using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BusTicketReservationSystem.Domain.Entities;
-using System; 
+using System;
 
 namespace BusTicketReservationSystem.Infrastructure.Repositories
 {
@@ -33,17 +33,17 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                 .Select(s => new AvailableBusDto
                 {
                     // FIX 2: Removed .ToString() because the DTO property is a GUID
-                    BusScheduleId = s.BusScheduleId, 
+                    BusScheduleId = s.BusScheduleId,
                     CompanyName = s.Bus.CompanyName,
                     BusName = s.Bus.BusName,
                     BusType = s.Bus.BusType,
-                    
+
                     // FIX 3: Removed .ToString() because the DTO property is a TimeSpan
-                    StartTime = s.StartTime, 
+                    StartTime = s.StartTime,
                     BoardingPoint = "Kallyanpur",
-                    
+
                     // FIX 4: Removed .ToString() because the DTO property is a TimeSpan
-                    ArrivalTime = s.StartTime.Add(TimeSpan.FromHours(5)), 
+                    ArrivalTime = s.StartTime.Add(TimeSpan.FromHours(5)),
                     DroppingPoint = "Rajshahi Counter",
                     SeatsLeft = s.Bus.TotalSeats,
                     Price = 700,
@@ -53,5 +53,31 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
 
             return schedules;
         }
+
+        public async Task<AvailableBusDto?> GetBusScheduleByIdAsync(Guid busScheduleId)
+        {
+            var schedule = await _context.BusSchedules
+                .AsNoTracking()
+                .Include(s => s.Route)
+                .Include(s => s.Bus)
+                .Where(s => s.BusScheduleId == busScheduleId) // Filter by the ID
+                .Select(s => new AvailableBusDto // Re-use your DTO for consistency
+                {
+                    BusScheduleId = s.BusScheduleId,
+                    CompanyName = s.Bus.CompanyName,
+                    BusName = s.Bus.BusName,
+                    BusType = s.Bus.BusType,
+                    StartTime = s.StartTime,
+                    BoardingPoint = "Kallyanpur", // Placeholder
+                    ArrivalTime = s.StartTime.Add(TimeSpan.FromHours(5)), // Placeholder
+                    DroppingPoint = "Rajshahi Counter", // Placeholder
+                    SeatsLeft = s.Bus.TotalSeats, // Placeholder
+                    Price = 700, // Placeholder
+                    CancellationPolicy = "Standard Policy"
+                })
+                .FirstOrDefaultAsync(); // Get just the first result
+            return schedule;
+        }
     }
+
 }

@@ -24,4 +24,17 @@ export class SearchService {
 
     return this.apiService.get<AvailableBus[]>('search', params);
   }
+
+  // ------------------------------------------------------------------
+  // NEW METHOD: Fetch details for a single bus schedule by ID
+  // ------------------------------------------------------------------
+  /**
+   * Fetches detailed information for a specific bus schedule.
+   * @param id The GUID of the bus schedule.
+   * @returns An Observable of a single AvailableBus object.
+   */
+  getBusDetails(id: string): Observable<AvailableBus> {
+    // The endpoint is GET /api/Search/{id}
+    return this.apiService.get<AvailableBus>(`search/${id}`);
+  }
 }

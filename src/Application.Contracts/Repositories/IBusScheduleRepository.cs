@@ -8,5 +8,7 @@ namespace BusTicketReservationSystem.Application.Contracts.Repositories
     public interface IBusScheduleRepository
     {
         Task<List<AvailableBusDto>> FindAvailableBusesAsync(string from, string to, DateTime journeyDate);
+        // NEW METHOD
+        Task<AvailableBusDto?> GetBusScheduleByIdAsync(Guid busScheduleId);
     }
 }

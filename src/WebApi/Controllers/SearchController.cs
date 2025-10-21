@@ -43,5 +43,30 @@ namespace BusTicketReservationSystem.WebApi.Controllers
 
             return Ok(buses);
         }
+
+        // ------------------------------------------------------------------
+        // NEW ENDPOINT: Get single bus schedule details by ID (for View Seats)
+        // Route: GET api/Search/{id}
+        // ------------------------------------------------------------------
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AvailableBusDto), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            if (id == Guid.Empty)
+            {
+                return BadRequest(new { message = "Schedule ID is required." });
+            }
+
+            // Call the Application Service
+            var schedule = await _searchService.GetScheduleDetailsAsync(id);
+
+            if (schedule == null)
+            {
+                return NotFound(new { message = $"Bus schedule with ID {id} not found." });
+            }
+
+            return Ok(schedule);
+        }
     }
 }

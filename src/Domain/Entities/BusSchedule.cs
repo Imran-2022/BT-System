@@ -11,7 +11,7 @@ namespace BusTicketReservationSystem.Domain.Entities
         public TimeSpan StartTime { get; set; }
 
         // Navigation properties (Foreign Keys)
-        public Route Route { get; set; }
-        public Bus Bus { get; set; }
+        public Route Route { get; set; } = default!;
+        public Bus Bus { get; set; } = default!;
     }
 }
