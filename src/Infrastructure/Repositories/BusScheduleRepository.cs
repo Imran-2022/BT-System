@@ -15,6 +15,73 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
         {
             _context = context;
         }
+        // 🎯 NEW IMPLEMENTATION
+        public async Task<BookingResponseDto> BookSeatsTransactionAsync(BookSeatInputDto input)
+        {
+            // 1. Begin Database Transaction (Ensures atomicity: All seats booked OR none are)
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // 2. Lock/Retrieve current seat statuses for the schedule
+                var seatsToUpdate = await _context.SeatStatuses
+                    .Where(s => s.BusScheduleId == input.ScheduleId &&
+                                input.SeatBookings.Select(b => b.SeatNumber).Contains(s.SeatNumber))
+                    // IMPORTANT: Use .Where().ToList() before the following check to force execution
+                    .ToListAsync();
+
+                // 3. Validation: Check if all requested seats exist and are AVAILABLE (Status = 1)
+                var availableSeats = seatsToUpdate.Where(s => s.Status == (int)SeatStatusCode.Available).ToList();
+
+                if (availableSeats.Count != input.SeatBookings.Count)
+                {
+                    await transaction.RollbackAsync();
+                    return new BookingResponseDto
+                    {
+                        BookingId = Guid.Empty,
+                        Status = "Failure",
+                        Message = "One or more selected seats are no longer available or do not exist."
+                    };
+                }
+
+                // 4. Update Seat Statuses
+                foreach (var seat in availableSeats)
+                {
+                    // 🎯 CRITICAL: Use the generic BOOKED status (3) as requested
+                    seat.Status = (int)SeatStatusCode.Booked;
+                    // NOTE: If you need to store M/F, you'd need to add a Gender field to SeatStatus.cs
+                }
+
+                // 5. Save Changes (Updates the SeatStatuses table)
+                await _context.SaveChangesAsync();
+
+                // 6. Finalize Booking (In a real app, you would create a Booking record here)
+                Guid bookingId = Guid.NewGuid(); // Placeholder booking ID
+
+                // 7. Commit Transaction
+                await transaction.CommitAsync();
+
+                return new BookingResponseDto
+                {
+                    BookingId = bookingId,
+                    Status = "Success",
+                    Message = $"Booking confirmed for {input.SeatBookings.Count} seats."
+                };
+            }
+            catch (Exception ex)
+            {
+                // 8. Rollback on Error
+                await transaction.RollbackAsync();
+                // Log the exception (recommended)
+                // _logger.LogError(ex, "Failed to complete seat booking transaction.");
+
+                return new BookingResponseDto
+                {
+                    BookingId = Guid.Empty,
+                    Status = "Failure",
+                    Message = "An unexpected error occurred during the booking process."
+                };
+            }
+        }
 
         // FIX 1: Changed method name back to FindAvailableBusesAsync to match your interface
         public async Task<List<AvailableBusDto>> FindAvailableBusesAsync(string from, string to, DateTime journeyDate)
@@ -26,6 +93,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(s => s.Route)
                 .Include(s => s.Bus)
+                .Include(s => s.SeatStatuses) // <--- CRITICAL ADDITION: Include SeatStatuses to count them
                 .Where(s => s.Route.Origin == from &&
                             s.Route.Destination == to &&
                             // Compare the date part against the corrected UTC parameter
@@ -45,7 +113,10 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     // FIX 4: Removed .ToString() because the DTO property is a TimeSpan
                     ArrivalTime = s.StartTime.Add(TimeSpan.FromHours(5)),
                     DroppingPoint = "Rajshahi Counter",
-                    SeatsLeft = s.Bus.TotalSeats,
+                    
+                    // 🎯 FIX: Calculate SeatsLeft dynamically for the search result
+                    SeatsLeft = s.SeatStatuses.Count(ss => ss.Status == (int)SeatStatusCode.Available), 
+                    
                     Price = 700,
                     CancellationPolicy = "Standard Policy"
                 })
@@ -110,6 +181,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
 
             // Step 3: Projection to DTO
             if (scheduleWithSeats == null) return null;
+            var availableSeatCount = scheduleWithSeats.SeatStatuses.Count(ss => ss.Status == (int)SeatStatusCode.Available); // 🎯 NEW: Calculate available seats
 
             var dto = new AvailableBusDto
             {
@@ -122,7 +194,8 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                 BoardingPoint = "Kallyanpur",
                 ArrivalTime = scheduleWithSeats.StartTime.Add(TimeSpan.FromHours(5)),
                 DroppingPoint = "Rajshahi Counter",
-                SeatsLeft = scheduleWithSeats.Bus.TotalSeats, // Needs update with real logic later
+                // 🎯 FIX: Calculate SeatsLeft dynamically
+                SeatsLeft = availableSeatCount,
                 Price = 700,
                 CancellationPolicy = "Standard Policy",
 

@@ -17,7 +17,23 @@ namespace BusTicketReservationSystem.Application.Services
         {
             _busScheduleRepository = busScheduleRepository;
         }
+        // 🎯 NEW METHOD IMPLEMENTATION
+        public async Task<BookingResponseDto> BookSeatsAsync(BookSeatInputDto input)
+        {
+            // Application Rule: Check if any seats were selected
+            if (input.SeatBookings == null || input.SeatBookings.Count == 0)
+            {
+                return new BookingResponseDto 
+                { 
+                    BookingId = Guid.Empty, 
+                    Status = "Failure", 
+                    Message = "No seats selected for booking." 
+                };
+            }
 
+            // Delegate the booking transaction to the repository
+            return await _busScheduleRepository.BookSeatsTransactionAsync(input);
+        }
         public async Task<List<AvailableBusDto>> SearchAvailableBusesAsync(string from, string to, DateTime journeyDate)
         {
             // Business Rule: Check if the date is valid (e.g., not in the past).

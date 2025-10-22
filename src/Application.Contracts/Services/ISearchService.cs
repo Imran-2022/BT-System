@@ -10,5 +10,7 @@ namespace BusTicketReservationSystem.Application.Contracts.Services
         Task<List<AvailableBusDto>> SearchAvailableBusesAsync(string from, string to, DateTime journeyDate);
         // NEW METHOD
         Task<AvailableBusDto?> GetScheduleDetailsAsync(Guid scheduleId);
+        // 🎯 NEW METHOD: Handles the booking transaction
+        Task<BookingResponseDto> BookSeatsAsync(BookSeatInputDto input);
     }
 }

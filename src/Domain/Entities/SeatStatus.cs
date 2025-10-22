@@ -27,7 +27,5 @@ namespace BusTicketReservationSystem.Domain.Entities
         Available = 1,
         Blocked = 2,
         Booked = 3,
-        SoldMale = 4, 
-        SoldFemale = 5,
     }
 }
