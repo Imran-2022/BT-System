@@ -1,3 +1,5 @@
+// src/WebApi/Controllers/SearchController.cs
+
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Application.Contracts.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -27,13 +29,13 @@ namespace BusTicketReservationSystem.WebApi.Controllers
             [FromQuery] string to,
             [FromQuery] DateTime journeyDate)
         {
-            // WebApi (Presentation) layer validation for required parameters
+            // ... (Search logic remains the same)
+
             if (string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
             {
                 return BadRequest(new { message = "Both 'from' and 'to' cities are required." });
             }
 
-            // Call the Application Service (use case execution)
             var buses = await _searchService.SearchAvailableBusesAsync(from, to, journeyDate);
 
             if (buses == null || buses.Count == 0)
@@ -58,8 +60,8 @@ namespace BusTicketReservationSystem.WebApi.Controllers
                 return BadRequest(new { message = "Schedule ID is required." });
             }
 
-            // Call the Application Service
-            var schedule = await _searchService.GetScheduleDetailsAsync(id);
+            // 🎯 FIX: Call the renamed method GetScheduleAndSeatDetailsAsync
+            var schedule = await _searchService.GetScheduleAndSeatDetailsAsync(id);
 
             if (schedule == null)
             {

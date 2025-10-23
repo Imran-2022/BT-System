@@ -1,3 +1,4 @@
+// src/Application/Services/SearchService.cs
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Services;
@@ -5,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace BusTicketReservationSystem.Application.Services
 {
@@ -17,52 +17,31 @@ namespace BusTicketReservationSystem.Application.Services
         {
             _busScheduleRepository = busScheduleRepository;
         }
-        // 🎯 NEW METHOD IMPLEMENTATION
-        public async Task<BookingResponseDto> BookSeatsAsync(BookSeatInputDto input)
-        {
-            // Application Rule: Check if any seats were selected
-            if (input.SeatBookings == null || input.SeatBookings.Count == 0)
-            {
-                return new BookingResponseDto 
-                { 
-                    BookingId = Guid.Empty, 
-                    Status = "Failure", 
-                    Message = "No seats selected for booking." 
-                };
-            }
 
-            // Delegate the booking transaction to the repository
-            return await _busScheduleRepository.BookSeatsTransactionAsync(input);
-        }
+        // ❌ REMOVED: BookSeatsAsync method
+
         public async Task<List<AvailableBusDto>> SearchAvailableBusesAsync(string from, string to, DateTime journeyDate)
         {
-            // Business Rule: Check if the date is valid (e.g., not in the past).
             if (journeyDate.Date < DateTime.Today.Date)
             {
-                // In a real system, you'd throw a domain/application exception.
                 return new List<AvailableBusDto>();
             }
 
-            // Delegate data retrieval to the Infrastructure layer (Repository)
             var results = await _busScheduleRepository.FindAvailableBusesAsync(from, to, journeyDate);
 
-            // Application-level sorting/filtering (e.g., sort by StartTime)
             return results.OrderBy(b => b.StartTime).ToList();
         }
 
-        // ------------------------------------------------------------------
-        // NEW METHOD IMPLEMENTATION: Required for the "View Seats" feature
-        // ------------------------------------------------------------------
-        public async Task<AvailableBusDto?> GetScheduleDetailsAsync(Guid scheduleId)
+        // 🎯 RENAMED METHOD
+        public async Task<AvailableBusDto?> GetScheduleAndSeatDetailsAsync(Guid scheduleId)
         {
             if (scheduleId == Guid.Empty)
             {
-                // Handle invalid input at the service layer
                 return null;
             }
 
             // Delegate data retrieval to the Repository
-            return await _busScheduleRepository.GetBusScheduleByIdAsync(scheduleId);
+            return await _busScheduleRepository.GetBusScheduleAndSeatDetailsByIdAsync(scheduleId);
         }
     }
 }

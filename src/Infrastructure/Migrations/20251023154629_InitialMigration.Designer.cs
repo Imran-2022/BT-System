@@ -3,6 +3,7 @@ using System;
 using BusTicketReservationSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusTicketReservationSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(BusTicketDbContext))]
-    partial class BusTicketDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023154629_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,83 +155,27 @@ namespace BusTicketReservationSystem.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000001"),
-                            BusName = "GL AC Bus 01",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000002"),
-                            BusType = "AC",
-                            CompanyName = "Green Line"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000002"),
-                            BusName = "Bus 02 Non-AC",
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            BusName = "99 Non-AC",
                             BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000001"),
                             BusType = "Non AC",
                             CompanyName = "National Travels"
                         },
                         new
                         {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000003"),
-                            BusName = "GL AC Bus 03",
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            BusName = "68 Business",
+                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000001"),
+                            BusType = "Non AC",
+                            CompanyName = "Hanif Enterprise"
+                        },
+                        new
+                        {
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            BusName = "GL AC",
                             BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000002"),
                             BusType = "AC",
                             CompanyName = "Green Line"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000004"),
-                            BusName = "Bus 04 Non-AC",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000001"),
-                            BusType = "Non AC",
-                            CompanyName = "National Travels"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000005"),
-                            BusName = "GL AC Bus 05",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000002"),
-                            BusType = "AC",
-                            CompanyName = "Green Line"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000006"),
-                            BusName = "Bus 06 Non-AC",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000001"),
-                            BusType = "Non AC",
-                            CompanyName = "National Travels"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000007"),
-                            BusName = "GL AC Bus 07",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000002"),
-                            BusType = "AC",
-                            CompanyName = "Green Line"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000008"),
-                            BusName = "Bus 08 Non-AC",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000001"),
-                            BusType = "Non AC",
-                            CompanyName = "National Travels"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000009"),
-                            BusName = "GL AC Bus 09",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000002"),
-                            BusType = "AC",
-                            CompanyName = "Green Line"
-                        },
-                        new
-                        {
-                            BusId = new Guid("30000000-0000-0000-0000-000000000010"),
-                            BusName = "Bus 10 Non-AC",
-                            BusSeatLayoutId = new Guid("a0000000-0000-0000-0000-000000000001"),
-                            BusType = "Non AC",
-                            CompanyName = "National Travels"
                         });
                 });
 
@@ -261,360 +208,360 @@ namespace BusTicketReservationSystem.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000101"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000001"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000001"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000102"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000002"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000002"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000103"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000003"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000003"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000104"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000004"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000004"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000105"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000005"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000005"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000106"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000006"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000006"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000107"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000007"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000007"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000108"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000008"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000008"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000109"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000009"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000009"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 29, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000110"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000010"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000010"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000111"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000001"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000011"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000112"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000002"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000012"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000113"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000003"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000013"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000114"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000004"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000014"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000115"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000005"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000015"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000116"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000006"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000016"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000117"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000007"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000017"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000118"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000008"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000018"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 30, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000119"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000009"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000019"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000120"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000010"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000020"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000121"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000001"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000021"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000122"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000002"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000022"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000123"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000003"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000023"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000124"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000004"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000024"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000125"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000005"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000025"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000126"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000006"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000026"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000127"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000007"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000027"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 10, 31, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000128"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000008"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000028"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000129"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000009"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000029"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000130"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000010"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000030"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000131"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000001"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000031"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000132"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000002"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000032"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000133"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000003"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000033"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000134"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000004"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000034"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000135"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000005"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000035"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000136"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000006"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000036"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 11, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000137"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000007"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000037"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000138"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000008"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000038"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000139"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000009"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000039"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000001"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000140"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000010"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000040"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000141"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000001"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000041"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000142"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000002"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000042"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000002"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000143"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000003"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000043"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000001"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000144"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000004"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000044"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000002"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 12, 0, 0, 0)
                         },
                         new
                         {
-                            BusScheduleId = new Guid("30000000-0000-0000-0000-000000000145"),
-                            BusId = new Guid("30000000-0000-0000-0000-000000000005"),
+                            BusScheduleId = new Guid("40000000-0000-0000-0000-000000000045"),
+                            BusId = new Guid("20000000-0000-0000-0000-000000000003"),
                             JourneyDate = new DateTime(2025, 11, 2, 0, 0, 0, 0, DateTimeKind.Utc),
                             RouteId = new Guid("10000000-0000-0000-0000-000000000003"),
                             StartTime = new TimeSpan(0, 18, 0, 0, 0)

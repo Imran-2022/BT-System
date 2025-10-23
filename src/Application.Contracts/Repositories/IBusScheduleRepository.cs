@@ -1,3 +1,4 @@
+// src/Application.Contracts/Repositories/IBusScheduleRepository.cs
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,10 @@ namespace BusTicketReservationSystem.Application.Contracts.Repositories
     public interface IBusScheduleRepository
     {
         Task<List<AvailableBusDto>> FindAvailableBusesAsync(string from, string to, DateTime journeyDate);
-        // NEW METHOD
-        Task<AvailableBusDto?> GetBusScheduleByIdAsync(Guid busScheduleId);
-        // 🎯 NEW METHOD: Performs the database transaction for booking
-        Task<BookingResponseDto> BookSeatsTransactionAsync(BookSeatInputDto input);
+        
+        // 🎯 RENAMED: To reflect the new service method
+        Task<AvailableBusDto?> GetBusScheduleAndSeatDetailsByIdAsync(Guid busScheduleId); 
+        
+        // ❌ REMOVED: Task<BookingResponseDto> BookSeatsTransactionAsync(BookSeatInputDto input);
     }
 }

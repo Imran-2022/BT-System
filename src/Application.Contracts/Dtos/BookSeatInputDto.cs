@@ -12,9 +12,10 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
 
         [Required]
         public decimal Price { get; set; }
+
+        [Required]
+        public string PassengerName { get; set; } = default!;
         
-        // NOTE: The frontend removed gender, so we remove it here to match the payload.
-        // public char Gender { get; set; } 
     }
 
     // DTO for the entire booking request
@@ -22,12 +23,12 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
     {
         [Required]
         public Guid ScheduleId { get; set; }
-
+        
+        // 🎯 CHANGE: Use Point IDs for definitive booking (optional for now, but recommended)
         [Required]
-        public string BoardingPoint { get; set; } = default!;
-
+        public Guid BoardingPointId { get; set; }
         [Required]
-        public string DroppingPoint { get; set; } = default!;
+        public Guid DroppingPointId { get; set; }
 
         [Required]
         [Phone]
@@ -35,10 +36,6 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
 
         [Required]
         public List<SeatBookingItemDto> SeatBookings { get; set; } = new List<SeatBookingItemDto>();
-
-        // IMPORTANT: The frontend did not send journeyDate, but your booking logic often requires it.
-        // For simplicity, we are omitting it to match your current frontend payload. 
-        // If your database requires this for validation, you'd need to add it back to the frontend and here.
     }
 
     // DTO for the successful booking response

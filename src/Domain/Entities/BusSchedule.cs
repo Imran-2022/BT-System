@@ -1,3 +1,4 @@
+// src/Domain/Entities/BusSchedule.cs
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +15,10 @@ namespace BusTicketReservationSystem.Domain.Entities
         // Navigation properties (Foreign Keys)
         public Route Route { get; set; } = default!;
         public Bus Bus { get; set; } = default!;
-        // --- NEW NAVIGATION PROPERTY ---
+        
         public ICollection<SeatStatus> SeatStatuses { get; set; } = new List<SeatStatus>();
+        
+        // Relationship definition for EF Core
+        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     }
 }

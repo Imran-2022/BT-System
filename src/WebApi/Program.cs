@@ -1,13 +1,13 @@
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Services;
 using BusTicketReservationSystem.Application.Services;
+using BusTicketReservationSystem.Infrastructure.Data;
+using BusTicketReservationSystem.Infrastructure.Repositories;
 // Remove this using since DummyBusScheduleRepository is going away:
 // using BusTicketReservationSystem.Infrastructure.Repositories; 
 
 // --- 1. ADD NEW USINGS FOR POSTGRESQL AND INFRASTRUCTURE ---
 using Microsoft.EntityFrameworkCore; 
-using BusTicketReservationSystem.Infrastructure.Data;
-using BusTicketReservationSystem.Infrastructure.Repositories; // Now points to the real repo
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +21,17 @@ builder.Services.AddDbContext<BusTicketDbContext>(options =>
     b => b.MigrationsAssembly("BusTicketReservationSystem.Infrastructure")));
 
 
+// 🎯 NEW: Register the Booking Service
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>(); 
+
+// Register Application Service (Search Service remains)
+builder.Services.AddScoped<ISearchService, SearchService>();
+
+// Register the REAL Repository using EF Core/PostgreSQL
+builder.Services.AddScoped<IBusScheduleRepository, BusScheduleRepository>();
 // Register Application Service
+
 builder.Services.AddScoped<ISearchService, SearchService>();
 
 // CRITICAL CHANGE: SWAP REPOSITORIES
