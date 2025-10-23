@@ -68,6 +68,27 @@ namespace BusTicketReservationSystem.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SeatStatuses",
+                columns: table => new
+                {
+                    SeatStatusId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BusScheduleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SeatNumber = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeatStatuses", x => x.SeatStatusId);
+                    table.ForeignKey(
+                        name: "FK_SeatStatuses_BusSchedules_BusScheduleId",
+                        column: x => x.BusScheduleId,
+                        principalTable: "BusSchedules",
+                        principalColumn: "BusScheduleId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Buses",
                 columns: new[] { "BusId", "BusName", "BusType", "CompanyName", "TotalSeats" },
@@ -100,11 +121,19 @@ namespace BusTicketReservationSystem.Infrastructure.Migrations
                 name: "IX_BusSchedules_RouteId",
                 table: "BusSchedules",
                 column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeatStatuses_BusScheduleId",
+                table: "SeatStatuses",
+                column: "BusScheduleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "SeatStatuses");
+
             migrationBuilder.DropTable(
                 name: "BusSchedules");
 

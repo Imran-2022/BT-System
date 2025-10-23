@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusTicketReservationSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(BusTicketDbContext))]
-    [Migration("20251021101143_AddSeatStatusEntity")]
-    partial class AddSeatStatusEntity
+    [Migration("20251023121737_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
