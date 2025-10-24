@@ -1,0 +1,33 @@
+from root --- [have src,tests,.gitignore]
+
+dotnet new xunit -n BusTicketReservationSystem.Application.Tests -o tests/BusTicketReservationSystem.Application.Tests 
+
+dotnet sln src/BusTicketReservationSystem.sln add tests/BusTicketReservationSystem.Application.Tests/BusTicketReservationSystem.Application.Tests.csproj
+
+
+/-------
+
+# 3.1 Reference Application
+dotnet add tests/BusTicketReservationSystem.Application.Tests/BusTicketReservationSystem.Application.Tests.csproj reference src/Application/BusTicketReservationSystem.Application.csproj
+
+# 3.2 Reference Application.Contracts
+dotnet add tests/BusTicketReservationSystem.Application.Tests/BusTicketReservationSystem.Application.Tests.csproj reference src/Application.Contracts/BusTicketReservationSystem.Application.Contracts.csproj
+
+# 3.3 Reference Domain
+dotnet add tests/BusTicketReservationSystem.Application.Tests/BusTicketReservationSystem.Application.Tests.csproj reference src/Domain/BusTicketReservationSystem.Domain.csproj
+
+# 3.4 Install Moq
+dotnet add tests/BusTicketReservationSystem.Application.Tests/BusTicketReservationSystem.Application.Tests.csproj package Moq
+
+
+/----------
+
+from your Root Directory (the folder containing src and tests):
+
+dotnet test ---not this, 
+
+dotnet test src/BusTicketReservationSystem.sln
+
+
+/-----------
+changes in code - [IBusScheduleRepository.cs, BookingService.cs,BusScheduleRepository.cs] nothing else.

@@ -31,12 +31,32 @@ namespace BusTicketReservationSystem.Application.Services
             // Application Rule: Check if any seats were selected
             if (input.SeatBookings == null || input.SeatBookings.Count == 0)
             {
-                return new BookingResponseDto 
-                { 
-                    BookingId = Guid.Empty, 
-                    Status = "Failure", 
-                    Message = "No seats selected for booking." 
+                return new BookingResponseDto
+                {
+                    BookingId = Guid.Empty,
+                    Status = "Failure",
+                    Message = "No seats selected for booking."
                 };
+            }
+            
+            // ==========================================================
+            // 🎯 THIS IS THE NEW VALIDATION LOGIC YOUR TEST DEPENDS ON:
+            // ==========================================================
+            
+            // 1. Get the list of all currently booked seats for this schedule
+            var bookedSeats = await _busScheduleRepository.GetBookedSeatNumbersAsync(input.ScheduleId);
+            
+            // 2. Check if the user is trying to book any of the already taken seats
+            foreach (var requestedSeat in input.SeatBookings)
+            {
+                if (bookedSeats.Contains(requestedSeat.SeatNumber))
+                {
+                    // 3. Fail early and return the specific error message
+                    return new BookingResponseDto { 
+                        Status = "Failure", 
+                        Message = $"Seat {requestedSeat.SeatNumber} is already booked." 
+                    };
+                }
             }
 
             // Delegate the booking transaction to the dedicated repository

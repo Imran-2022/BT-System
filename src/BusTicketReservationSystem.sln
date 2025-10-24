@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{6EDC70
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusTicketReservationSystem.WebApi", "WebApi\BusTicketReservationSystem.WebApi.csproj", "{2696785A-F930-4AE2-B83F-01CC24AC4192}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusTicketReservationSystem.Application.Tests", "..\tests\BusTicketReservationSystem.Application.Tests\BusTicketReservationSystem.Application.Tests.csproj", "{51E8567E-150E-45EE-97F0-6B817C120861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,18 @@ Global
 		{2696785A-F930-4AE2-B83F-01CC24AC4192}.Release|x64.Build.0 = Release|Any CPU
 		{2696785A-F930-4AE2-B83F-01CC24AC4192}.Release|x86.ActiveCfg = Release|Any CPU
 		{2696785A-F930-4AE2-B83F-01CC24AC4192}.Release|x86.Build.0 = Release|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Debug|x64.Build.0 = Debug|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Debug|x86.Build.0 = Debug|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Release|x64.ActiveCfg = Release|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Release|x64.Build.0 = Release|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Release|x86.ActiveCfg = Release|Any CPU
+		{51E8567E-150E-45EE-97F0-6B817C120861}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

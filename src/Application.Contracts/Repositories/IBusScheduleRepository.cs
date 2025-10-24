@@ -13,6 +13,7 @@ namespace BusTicketReservationSystem.Application.Contracts.Repositories
         // 🎯 RENAMED: To reflect the new service method
         Task<AvailableBusDto?> GetBusScheduleAndSeatDetailsByIdAsync(Guid busScheduleId); 
         
-        // ❌ REMOVED: Task<BookingResponseDto> BookSeatsTransactionAsync(BookSeatInputDto input);
+        // 🎯 NEW REQUIRED METHOD FOR VALIDATION
+        Task<List<string>> GetBookedSeatNumbersAsync(Guid busScheduleId);
     }
 }
