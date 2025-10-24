@@ -38,15 +38,16 @@
                 <div class="border p-4 bg-gray-50 rounded-lg">
                     <div *ngFor="let row of seatRows" class="flex justify-center space-x-2 my-1">
                         <div *ngFor="let seat of row"
-                            class="w-10 h-10 text-center flex items-center justify-center rounded-md font-semibold text-xs transition duration-150"
-                            [ngClass]="seat ? getSeatClass(seat) : 'w-10 h-10'">
-
-                            <span *ngIf="seat" (click)="toggleSeat(seat)">
+                            class="w-10 h-10 text-center flex items-center justify-center rounded-md font-semibold text-xs transition duration-150 cursor-pointer"
+                            [ngClass]="seat ? getSeatClass(seat) : 'w-10 h-10'"
+                            (click)="seat ? toggleSeat(seat) : null">
+                            <span *ngIf="seat">
                                 {{ seat.seatNumber }}
                             </span>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 

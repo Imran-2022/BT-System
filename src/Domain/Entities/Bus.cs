@@ -10,6 +10,8 @@ namespace BusTicketReservationSystem.Domain.Entities
         public string CompanyName { get; set; } = default!;
         public string BusName { get; set; } = default!;
         public string BusType { get; set; } = default!; // AC/Non-AC
+        // 🎯 NEW PROPERTY
+        public decimal BasePrice { get; set; }
 
         // Navigation properties
         public BusSeatLayout Layout { get; set; } = default!; // 🎯 NEW

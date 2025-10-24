@@ -68,8 +68,8 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                                 s.SeatStatuses.Count(ss => ss.Status != (int)SeatStatusCode.Available),
 
                     Price = s.SeatStatuses.Any()
-                        ? s.SeatStatuses.First().Price
-                        : (s.Bus.BusType.Contains("AC") ? 1200m : 700m),
+                    ? s.SeatStatuses.First().Price
+                    : s.Bus.BasePrice,
 
                     CancellationPolicy = "Flexible",
                 // 🎯 FIX 3: Include the necessary layout details
@@ -114,25 +114,6 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
 
             if (schedule == null) return null;
 
-            // 🎯 Check if seats exist, if not, initialize them based on the Bus's Layout
-            if (schedule.SeatStatuses.Count == 0)
-            {
-                // CRITICAL: We need to use the Bus's specific price
-                decimal basePrice = schedule.Bus.BusType.Contains("AC") ? 1200 : 700;
-
-                // Note: InitializeSeatStatusesAsync will save changes to the DB.
-                await InitializeSeatStatusesAsync(schedule.BusScheduleId, basePrice, schedule.Bus.Layout.SeatConfiguration);
-
-                // Refetch the schedule with the new seats
-                schedule = await _context.BusSchedules
-                    .Include(s => s.Route).ThenInclude(r => r.BoardingPoints)
-                    .Include(s => s.Bus).ThenInclude(b => b.Layout)
-                    .Include(s => s.SeatStatuses)
-                    .FirstOrDefaultAsync(s => s.BusScheduleId == busScheduleId);
-
-                if (schedule == null) return null;
-            }
-
             var availableSeatCount = schedule.SeatStatuses.Count(ss => ss.Status == (int)SeatStatusCode.Available);
 
             return new AvailableBusDto
@@ -143,7 +124,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                 BusType = schedule.Bus.BusType,
                 StartTime = schedule.StartTime,
                 SeatsLeft = availableSeatCount,
-                Price = schedule.SeatStatuses.First().Price,
+                Price = schedule.SeatStatuses.Any()? schedule.SeatStatuses.First().Price: schedule.Bus.BasePrice,
                 CancellationPolicy = "Flexible",
                 ArrivalTime = schedule.StartTime.Add(TimeSpan.FromHours(5)),
             // 🎯 FIX 3: Include the necessary layout details
@@ -169,31 +150,6 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                         Price = ss.Price
                     }).ToList()
             };
-        }
-
-        // 🎯 UPDATED: InitializeSeatStatusesAsync to use BusSeatLayout
-        private async Task InitializeSeatStatusesAsync(Guid busScheduleId, decimal basePrice, string seatConfiguration)
-        {
-            var seatStatuses = new List<SeatStatus>();
-
-            // Seat Configuration: "A1,A2,A3,A4;B1,B2,B3,B4;..."
-            var seatDefinitions = seatConfiguration.Split(';')
-                .SelectMany(row => row.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
-                .ToList();
-
-            foreach (var seatNumber in seatDefinitions)
-            {
-                seatStatuses.Add(new SeatStatus
-                {
-                    BusScheduleId = busScheduleId,
-                    SeatNumber = seatNumber,
-                    Status = (int)SeatStatusCode.Available,
-                    Price = basePrice
-                });
-            }
-
-            await _context.SeatStatuses.AddRangeAsync(seatStatuses);
-            await _context.SaveChangesAsync();
         }
     }
 }

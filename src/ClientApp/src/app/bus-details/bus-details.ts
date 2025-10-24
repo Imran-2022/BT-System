@@ -82,6 +82,7 @@ export class BusDetailsComponent implements OnInit {
         // Ensure your searchService.getBusDetails implementation uses the new method name in the backend service.
         this.searchService.getBusDetails(id).subscribe({
             next: (data) => {
+                console.log("data checking here : ",data);
                 this.busDetails = data;
                 this.isLoading = false;
                 if (data.seatLayout) {

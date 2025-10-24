@@ -62,7 +62,7 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             Guid routeDRId = Guid.Parse("10000000-0000-0000-0000-000000000001"); // Dhaka-Rajshahi
             Guid routeDDId = Guid.Parse("10000000-0000-0000-0000-000000000002"); // Dhaka-Dinajpur
             Guid routeDRaId = Guid.Parse("10000000-0000-0000-0000-000000000003"); // Dinajpur-Rangpur
-            
+
             // 🎯 NEW: Helper for generating sequential GUIDs for schedules/buses
             Func<int, Guid> NextGuid = (counter) => Guid.Parse(string.Format("30000000-0000-0000-0000-{0:D12}", counter));
 
@@ -73,8 +73,8 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             }
 
             // 2. Seed Seat Layouts (No changes here, they are correct)
-            string standardLayout = string.Join(";", new []{"A1,A2,A3,A4", "B1,B2,B3,B4", "C1,C2,C3,C4", "D1,D2,D3,D4", "E1,E2,E3,E4", "F1,F2,F3,F4", "G1,G2,G3,G4", "H1,H2,H3,H4"});
-            string acLayout = string.Join(";", new []{"A1,A2,A3", "B1,B2,B3", "C1,C2,C3", "D1,D2,D3", "E1,E2,E3", "F1,F2,F3", "G1,G2,G3", "H1,H2,H3"});
+            string standardLayout = string.Join(";", new[] { "A1,A2,A3,A4", "B1,B2,B3,B4", "C1,C2,C3,C4", "D1,D2,D3,D4", "E1,E2,E3,E4", "F1,F2,F3,F4", "G1,G2,G3,G4", "H1,H2,H3,H4" });
+            string acLayout = string.Join(";", new[] { "A1,A2,A3", "B1,B2,B3", "C1,C2,C3", "D1,D2,D3", "E1,E2,E3", "F1,F2,F3", "G1,G2,G3", "H1,H2,H3" });
 
             modelBuilder.Entity<BusSeatLayout>().HasData(
                 new BusSeatLayout { BusSeatLayoutId = layout2x2Id, LayoutName = "2x2 Standard", SeatsPerRowCount = 4, TotalSeats = 32, SeatConfiguration = standardLayout },
@@ -124,7 +124,7 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             {
                 Guid busId = NextGuid(i);
                 allBusIds.Add(busId);
-                
+
                 // Cyclically assign layout and bus type
                 bool isAC = i % 2 != 0; // Bus 1, 3, 5, 7, 9 are AC (using Green Line's 2x1 layout)
                 Guid layoutId = isAC ? layout2x1Id : layout2x2Id;
@@ -132,13 +132,17 @@ namespace BusTicketReservationSystem.Infrastructure.Data
                 string companyName = isAC ? "Green Line" : "National Travels";
                 string busName = isAC ? $"GL AC Bus {i:D2}" : $"Bus {i:D2} Non-AC";
 
+                // 🎯 CRITICAL FIX: Define the price once, on the Bus entity
+                decimal basePrice = isAC ? 1200.00m : 700.00m;
+
                 allBuses.Add(new Bus
                 {
                     BusId = busId,
                     BusSeatLayoutId = layoutId,
                     CompanyName = companyName,
                     BusName = busName,
-                    BusType = busType
+                    BusType = busType,
+                    BasePrice = basePrice // <-- Assign the new property
                 });
             }
 
@@ -161,7 +165,7 @@ namespace BusTicketReservationSystem.Infrastructure.Data
                         // 🎯 FIX: Assign the next unique BusId in the list for each unique trip
                         Guid currentBusId = allBusIds[busIndex % allBusIds.Count];
                         busIndex++; // Move to the next unique bus
-                        
+
                         schedules.Add(new BusSchedule
                         {
                             BusScheduleId = NextGuid(scheduleCounter++ + 100), // Offset counter to avoid collision with bus IDs
@@ -175,6 +179,41 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             }
 
             modelBuilder.Entity<BusSchedule>().HasData(schedules);
+            // --- START: 7. Seed Seat Statuses (The Final Corrected Seeding) ---
+            var seatStatuses = new List<SeatStatus>();
+            int seatStatusCounter = 1;
+
+            foreach (var schedule in schedules)
+            {
+                // Find the associated Bus to get its layout AND THE CORRECT BasePrice
+                var bus = allBuses.First(b => b.BusId == schedule.BusId);
+
+                // 🎯 The price is now retrieved directly from the Bus object
+                decimal basePrice = bus.BasePrice;
+
+                // Use the Bus' layout id (safer than string contains)
+                var layout = (bus.BusSeatLayoutId == layout2x1Id ? acLayout : standardLayout).Split(';');
+
+                foreach (var row in layout)
+                {
+                    foreach (var seatNumber in row.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
+                    {
+                        seatStatuses.Add(new SeatStatus
+                        {
+                            // Ensure unique ID generation is maintained
+                            SeatStatusId = Guid.Parse(string.Format("50000000-0000-0000-0000-{0:D12}", seatStatusCounter++)),
+                            BusScheduleId = schedule.BusScheduleId,
+                            SeatNumber = seatNumber.Trim(),
+                            Status = 1, // Available
+                            Price = basePrice, // <-- Uses the correct price from the Bus
+                            TicketId = null
+                        });
+                    }
+                }
+            }
+
+            modelBuilder.Entity<SeatStatus>().HasData(seatStatuses);
+            // --- END: 7. Seed Seat Statuses ---
         }
     }
 }
