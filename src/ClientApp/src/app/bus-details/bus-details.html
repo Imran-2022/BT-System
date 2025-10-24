@@ -1,23 +1,69 @@
-<div *ngIf="isLoading" class="p-8 text-center text-xl text-gray-500">
-    Loading bus details...
+<!-- Bus Details Loading State Handler -->
+<div *ngIf="isLoading"
+    class="flex flex-col items-center justify-center py-12 px-6 bg-[#f5f7f9] min-h-screen rounded-sm">
+
+    <!-- Spinner -->
+    <div class="w-12 h-12 mb-6 border-4 border-gray-200 border-t-yellow-500 rounded-full animate-spin"></div>
+
+    <!-- Loading Text -->
+    <div class="text-center max-w-md">
+        <p class="text-lg font-semibold text-gray-600 mb-2">
+            Wish you a safe Journey !
+        </p>
+        <p class="text-md text-gray-700">
+            Please wait while we fetch Details for your Desired Bus.
+        </p>
+    </div>
 </div>
 
-<div *ngIf="error" class="p-4 mb-4 text-red-700 bg-red-100 border border-red-200 rounded-lg">
-    {{ error }}
+<!-- Erorr Handler page -->
+
+<div *ngIf="error" class="bg-[#f5f7f9] border-l-4 border-red-500 text-red-700 p-4  m-16" role="alert">
+    <p class="p-4 mb-4 text-red-700 bg-red-100 border border-red-200 rounded-lg">Error {{ error }}</p>
+    <p class="text-gray-600">
+        Something went wrong while fetching the bus details. Please try again.
+    </p>
 </div>
+
 
 <div *ngIf="busDetails && !isLoading" class="container mx-auto p-4">
 
-    <div class="bg-indigo-600 text-white p-6 rounded-t-lg shadow-md mb-6">
-        <h1 class="text-3xl font-bold">{{ busDetails.companyName }} - {{ busDetails.busName }}</h1>
-        <p class="text-sm ">{{ busDetails.busType }} ({{ busDetails.seatsLeft }} seats left)</p>
-        <p class="text-xl mt-1">{{ busDetails.busType }} | Departure: {{ busDetails.startTime | slice:0:5 }} | Arrival:
-            {{ busDetails.arrivalTime | slice:0:5 }}</p>
-        <p class="text-sm mt-2">Price per seat (Base): ৳{{ busDetails.price | number:'1.2-2' }}</p>
+    <!-- Bus Information Card -->
+
+    <div class="bg-[#f5f7f9] rounded p-6 mb-6 border border-gray-200">
+        <!-- Company and Bus Name -->
+        <h1 class="text-gray-600 font-bold text-3xl">
+            {{ busDetails.companyName }} - {{ busDetails.busName }}
+        </h1>
+
+        <!-- Seats Left -->
+        <p class="text-gray-600 font-bold mt-2">
+            Total Seats Left: <span class="font-bold text-red-600">{{ busDetails.seatsLeft }}</span>
+        </p>
+
+        <!-- Bus Type and Timings -->
+        <div class="flex flex-wrap gap-4 items-center mb-2 text-gray-700">
+            <span class="text-gray-600 font-semibold mt-2">{{ busDetails.busType }}</span>
+            <span class="text-gray-600 font-semibold mt-2">
+                Departure: {{ busDetails.startTime | slice:0:5 }}
+            </span>
+            <span class="text-gray-600 font-semibold mt-2">
+                Arrival: {{ busDetails.arrivalTime | slice:0:5 }}
+            </span>
+        </div>
+
+        <!-- Price -->
+        <p class="text-gray-600 font-semibold mt-2">
+            Base Price per Seat:
+            <span class="text-red-600">৳{{ busDetails.price | number:'1.2-2' }}</span>
+        </p>
+
+        <!-- date -->
+        <p class="text-gray-600 font-semibold mt-2">{{ currentDate | date:'fullDate' }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
+        <!-- Seat Selection Card -->
         <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-xl">
             <h2 class="text-2xl font-semibold mb-4 text-gray-800">Select Your Seats</h2>
 
@@ -34,7 +80,7 @@
                     </span>
 
                 </div>
-
+                <!-- Seat Map -->
                 <div class="border p-4 bg-gray-50 rounded-lg">
                     <div *ngFor="let row of seatRows" class="flex justify-center space-x-2 my-1">
                         <div *ngFor="let seat of row"
@@ -50,9 +96,9 @@
 
             </div>
         </div>
-
+        <!-- Traveler & Booking Details -->
         <div class="md:col-span-1 space-y-6">
-
+            <!-- Traveler Details -->
             <div class="bg-white p-6 rounded-lg shadow-xl">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Traveler Details</h2>
 
@@ -84,18 +130,18 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-lg shadow-xl" *ngIf="selectedSeats.length > 0">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Passenger Names</h2>
-                <div *ngFor="let seat of selectedSeats" class="flex items-center space-x-2 mb-3">
-                    <span class="font-bold text-lg text-indigo-700 w-12 flex-shrink-0">Seat {{ seat.seatNumber }}</span>
+            <!-- Passenger Names -->
+            <div class="bg-white p-4 rounded" *ngIf="selectedSeats.length > 0">
+                <h2 class="text-sm font-bold mb-4 text-gray-800">Passenger Names</h2>
+                <div *ngFor="let seat of selectedSeats" class="flex items-center gap-2 mb-2">
+                    <span class="font-medium text-indigo-700 w-14 shrink-0 text-sm">Seat {{ seat.seatNumber }}</span>
                     <input type="text" [value]="seat.passengerName"
-                        (input)="updatePassengerName(seat.seatNumber, $event.target.value)" required
-                        placeholder="Enter Passenger Name"
-                        class="flex-grow shadow-sm sm:text-sm border-gray-300 rounded-md border p-2">
-                    <span class="text-md text-gray-600 font-medium">৳{{ seat.price | number:'1.2-2' }}</span>
+                        (input)="updatePassengerName(seat.seatNumber, $event.target.value)" placeholder="Enter Name"
+                        class="grow text-sm border-gray-300 border rounded p-1 px-2 focus:outline-none">
+                    <span class="text-gray-600 font-medium text-sm">৳{{ seat.price | number:'1.2-2' }}</span>
                 </div>
             </div>
-
+            <!-- Booking Summary -->
             <div class="bg-white p-6 rounded-lg shadow-xl">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800">Booking Summary</h2>
                 <div class="flex justify-between py-1">

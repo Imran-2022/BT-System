@@ -106,7 +106,7 @@ WHERE
     AND b."BusType" ILIKE '%Non AC%'; -- Ensures all variations of 'Non AC' are caught
 
 SELECT * FROM "BoardingPoints"
-SELECT * FROM "BusSchedules"
+es"SELECT * FROM "BusSchedul
 SELECT * FROM "BusSeatLayouts"
 SELECT * FROM "Buses"
 SELECT * FROM "Routes"
