@@ -1,0 +1,21 @@
+<div class="bg-[#f5f7f9] rounded p-6 mb-6 border border-gray-200">
+  <h1 class="text-gray-600 font-bold text-3xl">
+      {{ busDetails.companyName }} - {{ busDetails.busName }}
+  </h1>
+
+  <p class="text-gray-600 font-bold mt-2">
+      Total Seats Left: <span class="font-bold text-red-600">{{ busDetails.seatsLeft }}</span>
+  </p>
+
+  <div class="flex flex-wrap gap-4 items-center mb-2 text-gray-700">
+      <span class="font-semibold mt-2">{{ busDetails.busType }}</span>
+      <span class="font-semibold mt-2">Departure: {{ busDetails.startTime | slice:0:5 }}</span>
+      <span class="font-semibold mt-2">Arrival: {{ busDetails.arrivalTime | slice:0:5 }}</span>
+  </div>
+
+  <p class="text-gray-600 font-semibold mt-2">
+      Base Price per Seat: <span class="text-red-600">৳{{ busDetails.price | number:'1.2-2' }}</span>
+  </p>
+
+  <p class="text-gray-600 font-semibold mt-2">{{ currentDate | date:'fullDate' }}</p>
+</div>

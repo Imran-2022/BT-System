@@ -8,7 +8,6 @@ import { RouterLink } from "@angular/router";
   standalone: true,
   imports: [CommonModule, DecimalPipe, RouterLink], // DecimalPipe is needed for price formatting
   templateUrl: './search-results.html',
-  styleUrls: ['./search-results.css']
 })
 export class SearchResultsComponent {
   // Input property to receive the bus data from SearchFormComponent

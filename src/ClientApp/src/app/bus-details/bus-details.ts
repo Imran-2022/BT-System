@@ -9,6 +9,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
+import { BusInfoCard } from "./components/bus-info-card/bus-info-card";
+import { BusSeatSelector } from './components/bus-seat-selector/bus-seat-selector';
 
 // =============================
 // Seat Status Codes for UI rendering and logic
@@ -37,9 +39,8 @@ interface SelectedSeatDetails extends SeatGridItem {
 @Component({
     selector: 'app-bus-details',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, BusInfoCard,BusSeatSelector],
     templateUrl: './bus-details.html',
-    styleUrls: ['./bus-details.css']
 })
 export class BusDetailsComponent implements OnInit {
     public currentDate: Date = new Date(); // Displayed in UI

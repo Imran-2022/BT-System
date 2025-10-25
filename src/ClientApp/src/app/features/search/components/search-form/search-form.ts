@@ -10,7 +10,6 @@ import { SearchResultsComponent } from '../search-results/search-results';
   standalone: true,
   imports: [CommonModule, FormsModule, SearchResultsComponent],
   templateUrl: './search-form.html',
-  styleUrls: ['./search-form.css']
 })
 export class SearchFormComponent {
   private searchService = inject(SearchService);
