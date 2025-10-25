@@ -1,170 +1,192 @@
-<!-- Bus Details Loading State Handler -->
+<!-- Bus Details Loading State -->
 <div *ngIf="isLoading"
     class="flex flex-col items-center justify-center py-12 px-6 bg-[#f5f7f9] min-h-screen rounded-sm">
 
     <!-- Spinner -->
     <div class="w-12 h-12 mb-6 border-4 border-gray-200 border-t-yellow-500 rounded-full animate-spin"></div>
 
-    <!-- Loading Text -->
+    <!-- Loading Message -->
     <div class="text-center max-w-md">
-        <p class="text-lg font-semibold text-gray-600 mb-2">
-            Wish you a safe Journey !
-        </p>
-        <p class="text-md text-gray-700">
-            Please wait while we fetch Details for your Desired Bus.
-        </p>
+        <p class="text-lg font-semibold text-gray-600 mb-2">Wish you a safe Journey!</p>
+        <p class="text-md text-gray-700">Please wait while we fetch Details for your Desired Bus.</p>
     </div>
 </div>
 
-<!-- Erorr Handler page -->
 
-<div *ngIf="error" class="bg-[#f5f7f9] border-l-4 border-red-500 text-red-700 p-4  m-16" role="alert">
+<!-- Error State -->
+<div *ngIf="error" class="bg-[#f5f7f9] border-l-4 border-red-500 text-red-700 p-4 m-16" role="alert">
     <p class="p-4 mb-4 text-red-700 bg-red-100 border border-red-200 rounded-lg">Error {{ error }}</p>
-    <p class="text-gray-600">
-        Something went wrong while fetching the bus details. Please try again.
-    </p>
+    <p class="text-gray-600">Something went wrong while fetching the bus details. Please try again.</p>
 </div>
 
 
+<!-- Bus Details & Booking Section -->
 <div *ngIf="busDetails && !isLoading" class="container mx-auto p-4">
 
     <!-- Bus Information Card -->
-
-    <div class="bg-[#f5f7f9] rounded p-6 mb-6 border border-gray-200">
-        <!-- Company and Bus Name -->
+    <div *ngIf="!isBooked" class="bg-[#f5f7f9] rounded p-6 mb-6 border border-gray-200">
         <h1 class="text-gray-600 font-bold text-3xl">
             {{ busDetails.companyName }} - {{ busDetails.busName }}
         </h1>
 
-        <!-- Seats Left -->
         <p class="text-gray-600 font-bold mt-2">
             Total Seats Left: <span class="font-bold text-red-600">{{ busDetails.seatsLeft }}</span>
         </p>
 
-        <!-- Bus Type and Timings -->
         <div class="flex flex-wrap gap-4 items-center mb-2 text-gray-700">
-            <span class="text-gray-600 font-semibold mt-2">{{ busDetails.busType }}</span>
-            <span class="text-gray-600 font-semibold mt-2">
-                Departure: {{ busDetails.startTime | slice:0:5 }}
-            </span>
-            <span class="text-gray-600 font-semibold mt-2">
-                Arrival: {{ busDetails.arrivalTime | slice:0:5 }}
-            </span>
+            <span class="font-semibold mt-2">{{ busDetails.busType }}</span>
+            <span class="font-semibold mt-2">Departure: {{ busDetails.startTime | slice:0:5 }}</span>
+            <span class="font-semibold mt-2">Arrival: {{ busDetails.arrivalTime | slice:0:5 }}</span>
         </div>
 
-        <!-- Price -->
         <p class="text-gray-600 font-semibold mt-2">
-            Base Price per Seat:
-            <span class="text-red-600">৳{{ busDetails.price | number:'1.2-2' }}</span>
+            Base Price per Seat: <span class="text-red-600">৳{{ busDetails.price | number:'1.2-2' }}</span>
         </p>
 
-        <!-- date -->
         <p class="text-gray-600 font-semibold mt-2">{{ currentDate | date:'fullDate' }}</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Seat Selection Card -->
-        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-xl">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-800">Select Your Seats</h2>
+    <div class="flex justify-center items-start min-h-screen pb-4">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 p-6 max-w-6xl w-full ">
 
-            <div class="flex flex-col items-center">
-                <div class="flex flex-wrap text-xs mb-2 gap-x-3 justify-center">
-                    <span class="flex items-center text-gray-600">
-                        <div class="w-3.5 h-3.5 rounded-sm bg-white border border-gray-400 mr-1"></div>Available
-                    </span>
-                    <span class="flex items-center text-green-700">
-                        <div class="w-3.5 h-3.5 rounded-sm bg-green-500 border border-green-700 mr-1"></div>Selected
-                    </span>
-                    <span class="flex items-center text-purple-700">
-                        <div class="w-3.5 h-3.5 rounded-sm bg-purple-400 border border-purple-500 mr-1"></div>Booked
-                    </span>
+            <!-- Booking Confirmation Overlay -->
+            <div *ngIf="isBooked" class="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-50 z-50">
+                <div
+                    class="bg-[#f5f7f9] p-10 rounded shadow text-center max-w-lg w-full transform transition-all duration-300 scale-100">
+                    <div class="text-4xl text-green-500 mb-3">&#10004;</div>
+                    <h2 class="text-3xl font-bold mb-2 text-gray-800">Booking Confirmed!</h2>
+                    <p class="text-lg text-gray-600 mb-6">Your ticket has been successfully booked.</p>
 
+                    <button (click)="resetBooking()"
+                        class="cursor-pointer py-2 px-6 text-base font-semibold rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition duration-150">
+                        Book Another Ticket
+                    </button>
                 </div>
-                <!-- Seat Map -->
-                <div class="border p-4 bg-gray-50 rounded-lg">
-                    <div *ngFor="let row of seatRows" class="flex justify-center space-x-2 my-1">
-                        <div *ngFor="let seat of row"
-                            class="w-10 h-10 text-center flex items-center justify-center rounded-md font-semibold text-xs transition duration-150 cursor-pointer"
-                            [ngClass]="seat ? getSeatClass(seat) : 'w-10 h-10'"
-                            (click)="seat ? toggleSeat(seat) : null">
-                            <span *ngIf="seat">
-                                {{ seat.seatNumber }}
+            </div>
+
+            <!-- Main Booking Interface -->
+            <ng-container *ngIf="!isBooked">
+
+                <!-- Seat Selection Section -->
+                <div class="md:col-span-6 space-y-6">
+                    <div class="bg-white p-5 rounded border border-gray-200">
+
+                        <h2 class="text-xl font-bold mb-3 text-gray-800 text-center">Select Your Seats</h2>
+
+                        <!-- Seat Legend -->
+                        <div class="flex flex-wrap text-sm mb-4 gap-4 justify-center">
+                            <span class="flex items-center text-gray-600">
+                                <div class="w-3 h-3 border border-gray-400 mr-1"></div>Available
                             </span>
+                            <span class="flex items-center text-green-700">
+                                <div class="w-3 h-3 bg-green-500 border border-green-700 mr-1"></div>Selected
+                            </span>
+                            <span class="flex items-center text-purple-700">
+                                <div class="w-3 h-3 bg-purple-400 border border-purple-500 mr-1"></div>Booked
+                            </span>
+                        </div>
+
+                        <!-- Dynamic Seat Map -->
+                        <div class="p-3 bg-gray-50 rounded-md w-full sm:max-w-md">
+                            <div class="text-center text-sm font-semibold text-gray-700 mb-2 py-4">
+                                Front (Driver's Side)
+                            </div>
+
+                            <!-- Seat Layout Grid -->
+                            <div *ngFor="let row of seatRows" class="flex justify-center space-x-2 my-1">
+                                <div *ngFor="let seat of row"
+                                    class="w-8 h-8 text-center flex items-center justify-center rounded-sm font-semibold text-xs transition-colors duration-150"
+                                    [ngClass]="seat ? getSeatClass(seat) : 'w-8 h-8'"
+                                    (click)="seat ? toggleSeat(seat) : null">
+                                    <span *ngIf="seat">{{ seat.seatNumber }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-            </div>
-        </div>
-        <!-- Traveler & Booking Details -->
-        <div class="md:col-span-1 space-y-6">
-            <!-- Traveler Details -->
-            <div class="bg-white p-6 rounded-lg shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Traveler Details</h2>
+                <!-- Passenger & Booking Summary -->
+                <div class="md:col-span-6 space-y-6">
 
-                <div class="mb-4">
-                    <label for="boardingPoint" class="block text-sm font-medium text-gray-700">Boarding Point</label>
-                    <select id="boardingPoint" name="boardingPoint" [(ngModel)]="boardingPointId" required
-                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md border">
-                        <option *ngFor="let point of busDetails.boardingPoints" [value]="point.pointId">
-                            {{ point.locationName }} ({{ point.time | slice:0:5 }})
-                        </option>
-                    </select>
-                </div>
+                    <!-- Traveler Information -->
+                    <div class="bg-white p-5 rounded border border-gray-200">
+                        <h2 class="text-lg font-bold mb-3 text-gray-800">Traveler Contact</h2>
 
-                <div class="mb-4">
-                    <label for="droppingPoint" class="block text-sm font-medium text-gray-700">Dropping Point</label>
-                    <select id="droppingPoint" name="droppingPoint" [(ngModel)]="droppingPointId" required
-                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md border">
-                        <option *ngFor="let point of busDetails.droppingPoints" [value]="point.pointId">
-                            {{ point.locationName }} ({{ point.time | slice:0:5 }})
-                        </option>
-                    </select>
-                </div>
+                        <!-- Boarding Point -->
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Boarding Point</label>
+                            <select [(ngModel)]="boardingPointId" required
+                                class="mt-1 block w-full border border-gray-300 p-1.5 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option *ngFor="let point of busDetails.boardingPoints" [value]="point.pointId">
+                                    {{ point.locationName }} ({{ point.time | slice:0:5 }})
+                                </option>
+                            </select>
+                        </div>
 
-                <div class="mb-4">
-                    <label for="mobileNumber" class="block text-sm font-medium text-gray-700">Mobile Number</label>
-                    <input type="tel" id="mobileNumber" name="mobileNumber" [(ngModel)]="mobileNumber" required
-                        placeholder="e.g., 01XXXXXXXXX"
-                        class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md border p-2">
-                </div>
-            </div>
+                        <!-- Dropping Point -->
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Dropping Point</label>
+                            <select [(ngModel)]="droppingPointId" required
+                                class="mt-1 block w-full border border-gray-300 p-1.5 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option *ngFor="let point of busDetails.droppingPoints" [value]="point.pointId">
+                                    {{ point.locationName }} ({{ point.time | slice:0:5 }})
+                                </option>
+                            </select>
+                        </div>
 
-            <!-- Passenger Names -->
-            <div class="bg-white p-4 rounded" *ngIf="selectedSeats.length > 0">
-                <h2 class="text-sm font-bold mb-4 text-gray-800">Passenger Names</h2>
-                <div *ngFor="let seat of selectedSeats" class="flex items-center gap-2 mb-2">
-                    <span class="font-medium text-indigo-700 w-14 shrink-0 text-sm">Seat {{ seat.seatNumber }}</span>
-                    <input type="text" [value]="seat.passengerName"
-                        (input)="updatePassengerName(seat.seatNumber, $event.target.value)" placeholder="Enter Name"
-                        class="grow text-sm border-gray-300 border rounded p-1 px-2 focus:outline-none">
-                    <span class="text-gray-600 font-medium text-sm">৳{{ seat.price | number:'1.2-2' }}</span>
-                </div>
-            </div>
-            <!-- Booking Summary -->
-            <div class="bg-white p-6 rounded-lg shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Booking Summary</h2>
-                <div class="flex justify-between py-1">
-                    <span>Seats:</span>
-                    <span class="font-semibold">{{ selectedSeats.length }}</span>
-                </div>
-                <div class="flex justify-between py-1 border-b pb-2">
-                    <span>Total Price:</span>
-                    <span class="font-bold text-2xl text-red-600">৳{{ getTotalPrice() | number:'1.2-2' }}</span>
-                </div>
+                        <!-- Mobile Number -->
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Mobile Number (11 Digits)</label>
+                            <input type="tel" [(ngModel)]="mobileNumber" required pattern="^[0-9]{11}$" minlength="11"
+                                maxlength="11" placeholder="e.g., 01XXXXXXXXX" #mobileInput="ngModel"
+                                class="mt-1 block w-full border border-gray-300 rounded p-1.5 text-sm">
+                            <div *ngIf="mobileInput.invalid && mobileInput.touched" class="text-red-600 text-xs mt-1">
+                                <span *ngIf="mobileInput.errors?.['required']">Mobile number is required.</span>
+                                <span *ngIf="mobileInput.errors?.['pattern']">Must be exactly 11 digits.</span>
+                            </div>
+                        </div>
 
-                <button (click)="proceedToBooking()" [disabled]="isBooking || !isBookingFormValid()"
-                    class="w-full mt-4 py-3 text-lg font-bold rounded-lg transition duration-150"
-                    [ngClass]="isBookingFormValid() ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-gray-300 text-gray-600 cursor-not-allowed'">
-                    <span *ngIf="!isBooking; else bookingLoader">
-                        {{ selectedSeats.length > 0 ? 'Proceed to Book (' + selectedSeats.length + ' Seat' +
-                        (selectedSeats.length > 1 ? 's' : '') + ')' : 'Select Seats to Book' }}
-                    </span>
-                    <ng-template #bookingLoader>
-                        Booking...
-                    </ng-template>
-                </button>
-            </div>
+                        <!-- Passenger Names -->
+                        <h2 *ngIf="selectedSeats.length > 0" class="block text-sm font-medium text-gray-700 mb-2">
+                            Passenger Names</h2>
+                        <div *ngFor="let seat of selectedSeats" class="flex items-center gap-2 mb-2">
+                            <span class="font-medium text-indigo-700 w-12 text-sm shrink-0">Seat {{ seat.seatNumber
+                                }}</span>
+                            <input type="text" [value]="seat.passengerName"
+                                (input)="updatePassengerName(seat.seatNumber, $event.target.value)"
+                                placeholder="Enter Name"
+                                class="grow text-sm border border-gray-300 rounded p-1 px-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <!-- Booking Summary -->
+                    <div class="bg-white p-5 rounded border border-gray-200">
+                        <h2 class="text-lg font-bold mb-3 text-gray-800">Booking Summary</h2>
+
+                        <div class="flex justify-between py-1 text-gray-700 text-sm">
+                            <span>Seats Selected:</span>
+                            <span class="font-semibold">{{ selectedSeats.length }}</span>
+                        </div>
+
+                        <div class="flex justify-between py-2 border-t mt-2 pt-2">
+                            <span class="font-bold text-gray-800">Total Payable:</span>
+                            <span class="font-extrabold text-red-600">৳{{ getTotalPrice() | number:'1.2-2' }}</span>
+                        </div>
+
+                        <!-- Proceed Button -->
+                        <button (click)="proceedToBooking()" [disabled]="isBooking || !isBookingFormValid()"
+                            class="w-full mt-4 py-2 text-base font-bold rounded transition duration-150"
+                            [ngClass]="isBookingFormValid() ? 'bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer' : 'bg-gray-600 text-white cursor-not-allowed'">
+
+                            <span *ngIf="!isBooking; else bookingLoader">
+                                {{ selectedSeats.length > 0 ? 'Proceed to Book (' + selectedSeats.length + ' Seat' +
+                                (selectedSeats.length > 1 ? 's' : '') + ')' : 'Select Seats to Book' }}
+                            </span>
+                            <ng-template #bookingLoader>Processing Booking...</ng-template>
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
         </div>
     </div>
 </div>

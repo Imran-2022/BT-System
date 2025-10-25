@@ -10,7 +10,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 
-// Seat status codes for rendering and logic
+// =============================
+// Seat Status Codes for UI rendering and logic
+// =============================
 export const SeatStatusCodes = {
     AVAILABLE: 1,
     BLOCKED: 2,
@@ -18,12 +20,16 @@ export const SeatStatusCodes = {
     SELECTED: 99
 };
 
+// =============================
+// Interfaces for Seats
+// =============================
+
 // Represents a seat in the UI with selection state
 interface SeatGridItem extends SeatStatus {
     isSelected: boolean;
 }
 
-// Represents a selected seat along with passenger info for booking
+// Represents a selected seat with passenger info for booking
 interface SelectedSeatDetails extends SeatGridItem {
     passengerName: string;
 }
@@ -36,32 +42,33 @@ interface SelectedSeatDetails extends SeatGridItem {
     styleUrls: ['./bus-details.css']
 })
 export class BusDetailsComponent implements OnInit {
-    public currentDate: Date = new Date();
-    private route = inject(ActivatedRoute);
-    private searchService = inject(SearchService);
-    // Current trip ID and bus details
+    public currentDate: Date = new Date(); // Displayed in UI
+    private route = inject(ActivatedRoute); // ActivatedRoute for scheduleId
+    private searchService = inject(SearchService); // Service for API calls
+
+    // =============================
+    // State variables
+    // =============================
     scheduleId: string | null = null;
     busDetails: AvailableBus | null = null;
-
-    // Loading and error states
     isLoading = true;
     error: any = null;
 
-    // Seats organized for UI grid
+    // Seat data
     seatRows: (SeatGridItem | null)[][] = [];
     selectedSeats: SelectedSeatDetails[] = [];
     seatStatusCodes = SeatStatusCodes;
 
-    // Booking form state
+    // Booking form data
     boardingPointId: string = '';
     droppingPointId: string = '';
     mobileNumber: string = '';
     isBooking = false;
+    isBooked = false; // Controls booking confirmation overlay
 
     constructor() { }
 
     ngOnInit(): void {
-        // Get schedule ID from route and fetch bus details
         this.scheduleId = this.route.snapshot.paramMap.get('id');
         if (this.scheduleId) {
             this.fetchBusDetails(this.scheduleId);
@@ -71,26 +78,31 @@ export class BusDetailsComponent implements OnInit {
         }
     }
 
-    // Fetch bus details including seats and boarding/dropping points
+    /**
+     * Fetches bus details and initializes seat grid and points.
+     */
     fetchBusDetails(id: string): void {
         this.error = null;
         this.isLoading = true;
         const startTime = Date.now();
+
         this.searchService.getBusDetails(id).subscribe({
             next: async (data) => {
-                // console.log("response checking : ", data);
                 this.busDetails = data;
+
                 if (data.seatLayout) {
                     this.processSeatData(data.seatLayout);
                 }
+
                 // Set default boarding and dropping points
-                if (data.boardingPoints.length) {
+                if (data.boardingPoints.length && !this.boardingPointId) {
                     this.boardingPointId = data.boardingPoints[0].pointId;
                 }
-                if (data.droppingPoints.length) {
+                if (data.droppingPoints.length && !this.droppingPointId) {
                     this.droppingPointId = data.droppingPoints[0].pointId;
                 }
-                // Ensure minimum 3 seconds loading
+
+                // Simulate minimum loading time
                 const elapsed = Date.now() - startTime;
                 if (elapsed < 3000) {
                     await new Promise(resolve => setTimeout(resolve, 3000 - elapsed));
@@ -100,9 +112,6 @@ export class BusDetailsComponent implements OnInit {
             },
             error: async (err) => {
                 this.error = 'Failed to load bus details.';
-                // console.error('API Error:', err);
-                
-                // Ensure minimum 3 seconds loading
                 const elapsed = Date.now() - startTime;
                 if (elapsed < 3000) {
                     await new Promise(resolve => setTimeout(resolve, 3000 - elapsed));
@@ -112,13 +121,14 @@ export class BusDetailsComponent implements OnInit {
         });
     }
 
-    // Transform flat seat list into 2D grid for rendering
+    /**
+     * Converts flat seat list into structured 2D grid for rendering.
+     */
     private processSeatData(seatLayout: SeatStatus[]): void {
-        this.selectedSeats = [];
+        this.selectedSeats = []; // Reset selected seats
         this.seatRows = [];
         const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
-        // Sort seats by row and number
         seatLayout.sort((a, b) => a.seatNumber.localeCompare(b.seatNumber, undefined, { numeric: true, sensitivity: 'base' }));
 
         rows.forEach(rowLetter => {
@@ -126,104 +136,87 @@ export class BusDetailsComponent implements OnInit {
                 .filter(seat => seat.seatNumber.startsWith(rowLetter))
                 .map(seat => ({ ...seat, isSelected: false } as SeatGridItem));
 
-            if (rowSeats.length === 0) {
-                return;
-            }
+            if (rowSeats.length === 0) return;
+
             let structuredRow: (SeatGridItem | null)[] = [];
 
-            // Handle common layouts: 2x2 or 2x1 seats
+            // =============================
+            // Layout handling: This is highly custom
+            // If buses have variable layouts, consider making this dynamic
+            // =============================
+            
             if (rowSeats.length === 4) {
-                // 2x2 Layout: [Seat, Seat, Aisle, Seat, Seat]
-                structuredRow = [
-                    rowSeats[0],
-                    rowSeats[1],
-                    null, // Aisle Placeholder
-                    rowSeats[2],
-                    rowSeats[3]
-                ];
+                // 2x2 Layout with aisle placeholder
+                structuredRow = [rowSeats[0], rowSeats[1], null, rowSeats[2], rowSeats[3]];
             } else if (rowSeats.length === 3) {
-                // 2x1 Layout 
-                // layout: [Seat, Aisle, Seat, Seat]
-                structuredRow = [
-                    rowSeats[0],
-                    null, // Aisle Placeholder
-                    rowSeats[1],
-                    rowSeats[2]
-                ];
+                // 2x1 Layout example
+                structuredRow = [rowSeats[0], null, rowSeats[1], rowSeats[2]];
             } else {
-                return;  // Ignore unexpected layouts
+                return; // Ignore unexpected row layouts
             }
+
             this.seatRows.push(structuredRow);
         });
     }
 
-    // Toggle seat selection
+    /**
+     * Toggle selection for available seats.
+     */
     toggleSeat(seat: SeatGridItem): void {
-        if (seat.status !== SeatStatusCodes.AVAILABLE) {
-            return;
-        }
-        const existingSelection = this.selectedSeats.find(s => s.seatNumber === seat.seatNumber);
-        if (existingSelection) {
-            // Deselect
+        if (seat.status !== SeatStatusCodes.AVAILABLE) return;
+
+        const existing = this.selectedSeats.find(s => s.seatNumber === seat.seatNumber);
+        if (existing) {
             seat.isSelected = false;
             this.selectedSeats = this.selectedSeats.filter(s => s.seatNumber !== seat.seatNumber);
         } else {
-            // Select and add to list with empty passenger name
             seat.isSelected = true;
-            // CHANGE: Add 'passengerName: '' to the selection
             this.selectedSeats.push({ ...seat, passengerName: '' } as SelectedSeatDetails);
         }
     }
 
-    // Update passenger name for a selected seat
     updatePassengerName(seatNumber: string, name: string): void {
         const seat = this.selectedSeats.find(s => s.seatNumber === seatNumber);
-        if (seat) {
-            seat.passengerName = name;
-        }
+        if (seat) seat.passengerName = name;
     }
 
-    // Validation check for booking submission
+    /**
+     * Validates the booking form before submission.
+     */
     isBookingFormValid(): boolean {
         const hasSeats = this.selectedSeats.length > 0;
-        // Check if all selected seats have a non-empty passenger name
-        const allNamesEntered = this.selectedSeats.every(s => s.passengerName && s.passengerName.trim().length > 0);
-        // Check if point IDs and mobile number are set
-        const hasPointsAndMobile = !!this.mobileNumber && !!this.boardingPointId && !!this.droppingPointId;
+        const allNamesEntered = this.selectedSeats.every(s => s.passengerName?.trim().length > 0);
+        const mobileValid = /^[0-9]{11}$/.test(this.mobileNumber || '');
+        const hasPointsAndMobile = !!this.boardingPointId && !!this.droppingPointId && mobileValid;
+
         return hasSeats && allNamesEntered && hasPointsAndMobile;
     }
 
-
-    // Get CSS class for a seat based on status and selection
+    /**
+     * Returns the Tailwind CSS class for a seat.
+     */
     getSeatClass(seat: SeatGridItem): string {
-        if (seat.isSelected) {
-            return 'bg-green-500 border-green-700 hover:bg-green-600 cursor-pointer';
-        }
+        if (seat.isSelected) return 'bg-green-500 border-green-700 hover:bg-green-600 cursor-pointer text-white';
         switch (seat.status) {
-            case SeatStatusCodes.AVAILABLE:
-                return 'bg-white border-gray-400 hover:bg-gray-100 cursor-pointer';
-            case SeatStatusCodes.BLOCKED:
-                return 'bg-gray-400 border-gray-500 cursor-not-allowed';
-            case SeatStatusCodes.BOOKED:
-                return 'bg-purple-400 border-purple-500 cursor-not-allowed';
-            default:
-                return 'bg-gray-200 border-gray-300 cursor-not-allowed';
+            case SeatStatusCodes.AVAILABLE: return 'bg-white border-gray-400 hover:bg-gray-100 cursor-pointer';
+            case SeatStatusCodes.BLOCKED: return 'bg-gray-400 border-gray-500 cursor-not-allowed text-white';
+            case SeatStatusCodes.BOOKED: return 'bg-purple-400 border-purple-500 cursor-not-allowed text-white';
+            default: return 'bg-gray-200 border-gray-300 cursor-not-allowed';
         }
     }
 
-
-    // Calculate total price of selected seats
     getTotalPrice(): number {
         return this.selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
     }
 
-    // Submit booking request
+    /**
+     * Processes the booking request.
+     */
     async proceedToBooking(): Promise<void> {
         if (this.isBooking) return;
 
-        // Client-Side Validation
         if (!this.isBookingFormValid()) {
-            this.error = "Validation Error: Please select seats, provide a mobile number, select Boarding/Dropping points, and enter a name for *each* selected seat.";
+            this.error = "Validation Error: Please ensure all fields are filled, including names for all seats and a valid 11-digit mobile number.";
             return;
         }
 
@@ -235,7 +228,6 @@ export class BusDetailsComponent implements OnInit {
         this.isBooking = true;
         this.error = null;
 
-        // Prepare Payload (BookSeatInputDto)
         const bookingPayload: BookSeatInputDto = {
             scheduleId: this.scheduleId,
             boardingPointId: this.boardingPointId,
@@ -249,15 +241,11 @@ export class BusDetailsComponent implements OnInit {
         };
 
         try {
-            const booking$ = this.searchService.bookSeats(bookingPayload);
-            const response = await lastValueFrom(booking$);
-
-            // Handle Success
-            this.error = `Booking successful! Reference ID: ${response.bookingId}. Your seats are confirmed.`;
-            this.resetStateAfterBooking();
+            await lastValueFrom(this.searchService.bookSeats(bookingPayload));
+            this.isBooked = true;
+            this.resetFormAfterBookingSuccess();
 
         } catch (err: any) {
-            // Handle Error
             this.error = `Booking failed. ${err.error?.message || 'Server error or network connection failed.'}`;
             console.error('Booking Error:', err);
 
@@ -266,13 +254,23 @@ export class BusDetailsComponent implements OnInit {
         }
     }
 
-    // Reset form and reload seats after booking
-    private resetStateAfterBooking(): void {
-        // Clear form and refresh seat map
+    /**
+     * Clears form after successful booking but keeps seat map static for confirmation.
+     */
+    private resetFormAfterBookingSuccess(): void {
+        this.selectedSeats = [];
+        this.mobileNumber = '';
+    }
+
+    /**
+     * Resets the entire component state for a new booking attempt.
+     */
+    resetBooking(): void {
+        this.isBooked = false;
+        this.error = null;
         this.selectedSeats = [];
         this.mobileNumber = '';
 
-        // reset points to the default first one here:
         if (this.busDetails?.boardingPoints.length) {
             this.boardingPointId = this.busDetails.boardingPoints[0].pointId;
         }
@@ -280,8 +278,19 @@ export class BusDetailsComponent implements OnInit {
             this.droppingPointId = this.busDetails.droppingPoints[0].pointId;
         }
 
+        // Re-fetch data to refresh seat map
         if (this.scheduleId) {
-            this.fetchBusDetails(this.scheduleId); // Re-fetch to show updated seat status
+            this.fetchBusDetails(this.scheduleId);
         }
     }
+    // =============================
+    // TODO / Future Improvements:
+    // 1. Make seat row detection dynamic instead of using a fixed `rows` array. 
+    //    This will allow handling buses with any row labels automatically.
+    // 2. Improve seat layout processing to handle variable row lengths and configurations
+    //    instead of only 3 or 4 seats per row. This will prevent seats from being skipped
+    //    for buses with custom or irregular layouts.
+    // 3. Consider generating aisle positions dynamically based on seat count or bus layout metadata.
+    // =============================
+
 }
