@@ -1,14 +1,8 @@
-// src/Infrastructure/Repositories/BookingRepository.cs
-
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BusTicketReservationSystem.Domain.Entities;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace BusTicketReservationSystem.Infrastructure.Repositories
 {
@@ -21,29 +15,28 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             _context = context;
         }
         
-        // 🎯 IMPLEMENTATION: Transactional booking logic
+        // Books seats transactionally for a given schedule
         public async Task<BookingResponseDto> BookSeatsTransactionAsync(BookSeatInputDto input)
         {
-            // 1. Begin Database Transaction (ACID property: Atomicity)
+            // Begin database transaction for ACID compliance
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // 2. Lock/Retrieve current seat statuses for the schedule and requested seats
-                // Use AsEnumerable() to ensure filtering happens in memory after retrieving required seats
+                // Extract seat numbers from the input
                 var seatNumbersToBook = input.SeatBookings.Select(b => b.SeatNumber).ToList();
                 
-                // IMPORTANT: Fetch the seats that match the schedule and the list of seat numbers
+                // Retrieve seats for the schedule that match the requested seat numbers
                 var seatsToUpdate = await _context.SeatStatuses
                     .Where(s => s.BusScheduleId == input.ScheduleId &&
                                 seatNumbersToBook.Contains(s.SeatNumber))
                     .ToListAsync();
 
-                // 3. Validation: Check if ALL requested seats exist and are AVAILABLE (Status = 1)
+                // Filter available seats (Status = Available)
                 var availableSeats = seatsToUpdate
                     .Where(s => s.Status == (int)SeatStatusCode.Available)
                     .ToList();
                 
-                // Check 1: Did we find exactly the number of seats requested? (Prevents non-existent seat booking)
+                // Validation: Check if all requested seats exist
                 if (seatsToUpdate.Count != input.SeatBookings.Count)
                 {
                     await transaction.RollbackAsync();
@@ -55,7 +48,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     };
                 }
 
-                // Check 2: Are all found seats actually available? (Prevents double booking)
+                // Validation: Check if all requested seats are available
                 if (availableSeats.Count != input.SeatBookings.Count)
                 {
                     await transaction.RollbackAsync();
@@ -67,7 +60,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     };
                 }
 
-                // 4. Create the main Ticket/Booking Record
+                // Create the ticket/booking record
                 var newTicket = new Ticket
                 {
                     TicketId = Guid.NewGuid(),
@@ -80,22 +73,20 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                 };
                 _context.Tickets.Add(newTicket);
                 
-                // 5. Update Seat Statuses and Link to Ticket
+                // Update seat statuses and link to ticket
                 foreach (var seat in availableSeats)
                 {
                     var bookingDetail = input.SeatBookings.First(b => b.SeatNumber == seat.SeatNumber);
-                    
-                    seat.Status = (int)SeatStatusCode.Booked; // Status 3
-                    // 🎯 NEW: Store Passenger and Ticket details on the seat
+                    seat.Status = (int)SeatStatusCode.Booked; 
                     seat.PassengerName = bookingDetail.PassengerName;
-                    seat.MobileNumber = input.MobileNumber; // Redundant but useful for reporting/lookup
+                    seat.MobileNumber = input.MobileNumber; 
                     seat.TicketId = newTicket.TicketId;
                 }
 
-                // 6. Save Changes (Updates SeatsStatuses and inserts the Ticket)
+                // Save changes to the database
                 await _context.SaveChangesAsync();
 
-                // 7. Commit Transaction
+                // Commit the transaction
                 await transaction.CommitAsync();
 
                 return new BookingResponseDto
@@ -107,10 +98,8 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                // 8. Rollback on Error
+                // Rollback transaction on error
                 await transaction.RollbackAsync();
-                // You would log ex here
-                
                 return new BookingResponseDto
                 {
                     BookingId = Guid.Empty,
@@ -120,7 +109,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             }
         }
         
-        // Helper to retrieve the location name from the Point ID
+        // Helper method to get location name by Point ID
         private async Task<string> GetLocationName(Guid pointId)
         {
             var point = await _context.BoardingPoints.AsNoTracking().FirstOrDefaultAsync(p => p.PointId == pointId);

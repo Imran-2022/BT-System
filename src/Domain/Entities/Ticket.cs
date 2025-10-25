@@ -10,8 +10,7 @@ namespace BusTicketReservationSystem.Domain.Entities
         public Guid TicketId { get; set; }
         public Guid BusScheduleId { get; set; } // Foreign Key to BusSchedule
         public DateTime BookingDate { get; set; }
-        
-        // Finalized route info
+        // route info
         public string BoardingPoint { get; set; } = default!;
         public string DroppingPoint { get; set; } = default!;
         
@@ -20,10 +19,8 @@ namespace BusTicketReservationSystem.Domain.Entities
         
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalPrice { get; set; }
-        
         // Navigation Properties
         public ICollection<SeatStatus> BookedSeats { get; set; } = new List<SeatStatus>();
-        
         // Relationship definition for EF Core
         public BusSchedule BusSchedule { get; set; } = default!; 
     }

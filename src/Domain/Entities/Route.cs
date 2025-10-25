@@ -11,8 +11,6 @@ namespace BusTicketReservationSystem.Domain.Entities
         
         // Collection navigation property (used in search logic)
         public ICollection<BusSchedule> BusSchedules { get; set; } = new List<BusSchedule>();
-        
-        // 🎯 FIX: ADDED MISSING NAVIGATION PROPERTY
         public ICollection<BoardingPoint> BoardingPoints { get; set; } = new List<BoardingPoint>();
     }
 }

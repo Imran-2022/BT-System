@@ -1,16 +1,13 @@
-// src/Application.Contracts/Services/IBookingService.cs (NEW FILE)
 using BusTicketReservationSystem.Application.Contracts.Dtos;
-using System;
-using System.Threading.Tasks;
 
 namespace BusTicketReservationSystem.Application.Contracts.Services
 {
     public interface IBookingService
     {
-        // 🎯 Implementation of your requested method
+        // Retrieves the seat plan for a specific bus schedule.
         Task<AvailableBusDto?> GetSeatPlanAsync(Guid busScheduleId);
         
-        // 🎯 Implementation of your requested method
+        // Books a seat based on the provided input details and returns the booking response.
         Task<BookingResponseDto> BookSeatAsync(BookSeatInputDto input);
     }
 }

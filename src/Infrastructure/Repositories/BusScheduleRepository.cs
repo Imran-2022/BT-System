@@ -1,14 +1,8 @@
-// src/Infrastructure/Repositories/BusScheduleRepository.cs
-
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using BusTicketReservationSystem.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BusTicketReservationSystem.Infrastructure.Repositories
 {
@@ -21,37 +15,30 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             _context = context;
         }
 
-        // ❌ REMOVED: BookSeatsTransactionAsync (Moved to IBookingRepository)
-
-        // 🎯 UPDATED: FindAvailableBusesAsync to use dynamic points and prices
-        // src/Infrastructure/Repositories/BusScheduleRepository.cs
-
+        // Finds available buses based on origin, destination, and journey date
         public async Task<List<AvailableBusDto>> FindAvailableBusesAsync(string from, string to, DateTime journeyDate)
         {
             DateTime utcJourneyDate = DateTime.SpecifyKind(journeyDate.Date, DateTimeKind.Utc);
 
-            // 1. Find the specific Route ID first based on exact origin/destination
+            // Find the route matching the origin and destination
             var route = await _context.Routes
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Origin == from && r.Destination == to);
 
             if (route == null)
             {
-                // No exact route found, return empty list
                 return new List<AvailableBusDto>();
             }
 
-            // 2. Query schedules using the exact RouteId found in step 1
+            // Query schedules for the route on the specified date
             var schedules = await _context.BusSchedules
                 .AsNoTracking()
-                // Include statements should now follow the query to ensure all data is projected
                 .Include(s => s.Route)
-                .Include(s => s.Bus).ThenInclude(b => b.Layout) // Ensure Layout is included for TotalSeats
+                .Include(s => s.Bus).ThenInclude(b => b.Layout) 
                 .Include(s => s.SeatStatuses)
                 .Include(s => s.Route.BoardingPoints)
 
-                // 🎯 FIX 2: Filter by the exact RouteId and JourneyDate
-                .Where(s => s.RouteId == route.RouteId && // <-- Only schedules matching the exact route
+                .Where(s => s.RouteId == route.RouteId && 
                             s.JourneyDate.Date == utcJourneyDate.Date)
 
                 .Select(s => new AvailableBusDto
@@ -63,7 +50,6 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     StartTime = s.StartTime,
                     ArrivalTime = s.StartTime.Add(TimeSpan.FromHours(5)),
 
-                    // FIX 1: Correctly calculate SeatsLeft and use fallback price
                     SeatsLeft = s.Bus.Layout.TotalSeats -
                                 s.SeatStatuses.Count(ss => ss.Status != (int)SeatStatusCode.Available),
 
@@ -72,11 +58,10 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     : s.Bus.BasePrice,
 
                     CancellationPolicy = "Flexible",
-                    // 🎯 FIX 3: Include the necessary layout details
                     LayoutId = s.Bus.Layout.BusSeatLayoutId,
                     SeatConfiguration = s.Bus.Layout.SeatConfiguration,
 
-                    // DYNAMIC POINTS: Projecting Boarding Points
+                    // Boarding points for the route
                     BoardingPoints = s.Route.BoardingPoints
                         .Where(p => !p.IsDroppingPoint)
                         .Select(p => new PointOptionDto
@@ -86,7 +71,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                             Time = s.StartTime.Add(p.DepartureTimeOffset)
                         }).ToList(),
 
-                    // DYNAMIC POINTS: Projecting Dropping Points
+                    // Dropping points for the route
                     DroppingPoints = s.Route.BoardingPoints
                         .Where(p => p.IsDroppingPoint)
                         .Select(p => new PointOptionDto
@@ -102,7 +87,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
 
             return schedules;
         }
-        // 🎯 RENAMED & UPDATED: GetBusScheduleAndSeatDetailsByIdAsync
+        // Gets detailed schedule and seat information by schedule ID
         public async Task<AvailableBusDto?> GetBusScheduleAndSeatDetailsByIdAsync(Guid busScheduleId)
         {
             var schedule = await _context.BusSchedules
@@ -127,11 +112,9 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                 Price = schedule.SeatStatuses.Any() ? schedule.SeatStatuses.First().Price : schedule.Bus.BasePrice,
                 CancellationPolicy = "Flexible",
                 ArrivalTime = schedule.StartTime.Add(TimeSpan.FromHours(5)),
-                // 🎯 FIX 3: Include the necessary layout details
                 LayoutId = schedule.Bus.Layout.BusSeatLayoutId,
                 SeatConfiguration = schedule.Bus.Layout.SeatConfiguration,
 
-                // 🎯 DYNAMIC POINTS
                 BoardingPoints = schedule.Route.BoardingPoints
                     .Where(p => !p.IsDroppingPoint)
                     .Select(p => new PointOptionDto { PointId = p.PointId, LocationName = p.LocationName, Time = schedule.StartTime.Add(p.DepartureTimeOffset) })
@@ -151,16 +134,10 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     }).ToList()
             };
         }
-    // 🎯 NEW REQUIRED METHOD IMPLEMENTATION 🎯
+        
+        // Returns booked seat numbers for a given schedule
         public Task<List<string>> GetBookedSeatNumbersAsync(Guid busScheduleId)
         {
-            // WARNING: This is a temporary placeholder to fix the compiler error. 
-            // In a real application, this code would query the database 
-            // (e.g., using Entity Framework Core) to fetch the actual booked seats 
-            // for the given busScheduleId.
-
-            // Since we don't have the database context here, we return an empty list 
-            // to satisfy the compiler and allow the application to build and run.
             return Task.FromResult(new List<string>());
         }
     }

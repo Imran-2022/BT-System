@@ -1,4 +1,3 @@
-// src/Application.Contracts/Dtos/AvailableBusDto.cs
 using System;
 using System.Collections.Generic;
 
@@ -22,14 +21,10 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
         public int SeatsLeft { get; set; }
         public decimal Price { get; set; }
         public string CancellationPolicy { get; set; } = default!;
-        // ... existing properties ...
         public Guid LayoutId { get; set; } // The ID of the layout
         public string SeatConfiguration { get; set; } = default!; // The string defining the layout
-        // 🎯 CHANGES: Boarding/Dropping points are now lists of options
         public List<PointOptionDto> BoardingPoints { get; set; } = new List<PointOptionDto>();
         public List<PointOptionDto> DroppingPoints { get; set; } = new List<PointOptionDto>();
-        
-        // Seat layout for Search results (will be empty)
         public List<SeatStatusDto> SeatLayout { get; set; } = new List<SeatStatusDto>();
     }
 }

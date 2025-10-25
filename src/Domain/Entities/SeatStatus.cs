@@ -1,8 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-// Assuming your BaseEntity and BusSchedule are in these namespaces
-// using BusTicketReservationSystem.Domain.Common;
-// using BusTicketReservationSystem.Domain.Entities; 
 
 namespace BusTicketReservationSystem.Domain.Entities
 {
@@ -19,7 +16,7 @@ namespace BusTicketReservationSystem.Domain.Entities
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
-        // 🎯 NEW: Passenger details linked to the seat status upon booking
+        // Passenger details linked to the seat status upon booking
         public string? PassengerName { get; set; }
         public string? MobileNumber { get; set; }
         public Guid? TicketId { get; set; } // Link to the booking ticket

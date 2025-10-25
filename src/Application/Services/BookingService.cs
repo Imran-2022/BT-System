@@ -1,4 +1,3 @@
-// src/Application/Services/BookingService.cs (NEW FILE)
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Services;
@@ -9,8 +8,8 @@ namespace BusTicketReservationSystem.Application.Services
 {
     public class BookingService : IBookingService
     {
-        private readonly IBusScheduleRepository _busScheduleRepository; // Used for fetching details
-        private readonly IBookingRepository _bookingRepository; // Used for transaction
+        private readonly IBusScheduleRepository _busScheduleRepository;
+        private readonly IBookingRepository _bookingRepository;
 
         public BookingService(IBusScheduleRepository busScheduleRepository, IBookingRepository bookingRepository)
         {
@@ -18,17 +17,15 @@ namespace BusTicketReservationSystem.Application.Services
             _bookingRepository = bookingRepository;
         }
 
-        // 🎯 Implements GetSeatPlanAsync (uses the same underlying repository method)
         public Task<AvailableBusDto?> GetSeatPlanAsync(Guid busScheduleId)
         {
-            // Renamed for better DDD: Schedule details are fetched here, including the seat plan.
+            // Fetch schedule details including seat plan
             return _busScheduleRepository.GetBusScheduleAndSeatDetailsByIdAsync(busScheduleId);
         }
 
-        // 🎯 Implements BookSeatAsync
         public async Task<BookingResponseDto> BookSeatAsync(BookSeatInputDto input)
         {
-            // Application Rule: Check if any seats were selected
+            // Fail if no seats were selected
             if (input.SeatBookings == null || input.SeatBookings.Count == 0)
             {
                 return new BookingResponseDto
@@ -38,28 +35,22 @@ namespace BusTicketReservationSystem.Application.Services
                     Message = "No seats selected for booking."
                 };
             }
-            
-            // ==========================================================
-            // 🎯 THIS IS THE NEW VALIDATION LOGIC YOUR TEST DEPENDS ON:
-            // ==========================================================
-            
-            // 1. Get the list of all currently booked seats for this schedule
+
+            // Check for already booked seats
             var bookedSeats = await _busScheduleRepository.GetBookedSeatNumbersAsync(input.ScheduleId);
-            
-            // 2. Check if the user is trying to book any of the already taken seats
             foreach (var requestedSeat in input.SeatBookings)
             {
                 if (bookedSeats.Contains(requestedSeat.SeatNumber))
                 {
-                    // 3. Fail early and return the specific error message
-                    return new BookingResponseDto { 
-                        Status = "Failure", 
-                        Message = $"Seat {requestedSeat.SeatNumber} is already booked." 
+                    return new BookingResponseDto
+                    {
+                        Status = "Failure",
+                        Message = $"Seat {requestedSeat.SeatNumber} is already booked."
                     };
                 }
             }
 
-            // Delegate the booking transaction to the dedicated repository
+            // Proceed with booking transaction
             return await _bookingRepository.BookSeatsTransactionAsync(input);
         }
     }

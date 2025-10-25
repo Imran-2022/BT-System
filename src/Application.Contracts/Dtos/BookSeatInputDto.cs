@@ -15,7 +15,7 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
 
         [Required]
         public string PassengerName { get; set; } = default!;
-        
+
     }
 
     // DTO for the entire booking request
@@ -23,8 +23,7 @@ namespace BusTicketReservationSystem.Application.Contracts.Dtos
     {
         [Required]
         public Guid ScheduleId { get; set; }
-        
-        // 🎯 CHANGE: Use Point IDs for definitive booking (optional for now, but recommended)
+
         [Required]
         public Guid BoardingPointId { get; set; }
         [Required]
