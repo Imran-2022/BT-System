@@ -13,41 +13,41 @@
 
     <div *ngFor="let bus of buses" class="bg-white border border-gray-200 rounded-lg p-5 mb-6">
 
-        <div class="grid grid-cols-12 items-center gap-2 text">
+        <div class="grid grid-cols-2 md:grid-cols-12 items-center gap-4 md:gap-2">
 
             <!-- Company & Bus Info -->
-            <div class="col-span-3 flex flex-col justify-center">
+            <div class="col-span-2 md:col-span-3 flex flex-col justify-center">
                 <p class="font-bold text-gray-800">{{ bus.companyName }}</p>
                 <p class="text-gray-500">{{ bus.busName }} ({{ bus.busType }})</p>
             </div>
 
             <!-- Start Point & Time -->
-            <div class="col-span-2 flex flex-col justify-center items-center">
+            <div class="col-span-1 md:col-span-2 flex flex-col justify-center items-center order-3 md:order-0">
                 <p class="text-gray-800 font-medium">Departure: {{ bus.startTime | slice:0:5 }}</p>
                 <p class="text-gray-500 text-center">{{ bus.boardingPoints[0]?.locationName }}</p>
             </div>
 
             <!-- Duration -->
-            <div class="col-span-2 flex flex-col justify-center items-center">
+            <div class="hidden md:col-span-2 md:flex flex-col justify-center items-center">
                 <p class="text-gray-800 font-medium">Duration</p>
                 <p class="text-gray-500 text-center">5h 00m</p>
             </div>
 
             <!-- End Point & Time -->
-            <div class="col-span-2 flex flex-col justify-center items-center">
+            <div class="col-span-1 md:col-span-2 flex flex-col justify-center items-center order-4 md:order-0">
                 <p class="text-gray-800 font-medium">Arrival: {{ bus.arrivalTime | slice:0:5 }}</p>
                 <p class="text-gray-500 text-center">{{ bus.droppingPoints[0]?.locationName }}</p>
             </div>
 
             <!-- Seats Left -->
-            <div class="col-span-2 flex flex-col justify-center items-center">
+            <div class="col-span-1 md:col-span-2 flex flex-col justify-center items-center order-5 md:order-0">
                 <p class="text-gray-800 font-medium">Seats Left</p>
                 <p class="font-bold text-center" [ngClass]="bus.seatsLeft > 0 ? 'text-green-600' : 'text-red-600'">{{
                     bus.seatsLeft }}</p>
             </div>
 
             <!-- Price & Button -->
-            <div class="col-span-1 flex flex-col justify-center items-center">
+            <div class="col-span-1 md:col-span-1 flex flex-col justify-center items-center order-6 md:order-0">
                 <p class="font-bold text-red-600 text-sm">৳{{ bus.price | number:'1.2-2' }}</p>
                 <button [routerLink]="['/bus', bus.busScheduleId]" [disabled]="bus.seatsLeft === 0"
                     class="mt-1 px-3 py-1 rounded text-white text-xs font-medium w-full
