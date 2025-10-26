@@ -106,7 +106,7 @@ WHERE
     AND b."BusType" ILIKE '%Non AC%'; -- Ensures all variations of 'Non AC' are caught
 
 SELECT * FROM "BoardingPoints"
-es"SELECT * FROM "BusSchedul
+SELECT * FROM "BusSchedules"
 SELECT * FROM "BusSeatLayouts"
 SELECT * FROM "Buses"
 SELECT * FROM "Routes"
@@ -186,3 +186,26 @@ FROM "Buses" b
 JOIN "BusSeatLayouts" l ON b."BusSeatLayoutId" = l."BusSeatLayoutId"
 ORDER BY b."BusName";
 
+
+
+
+SELECT * FROM "BoardingPoints"
+SELECT * FROM "BusSchedules"
+SELECT * FROM "BusSeatLayouts"
+SELECT * FROM "Buses"
+SELECT * FROM "Routes"
+SELECT * FROM "SeatStatuses"
+SELECT * FROM "Tickets"
+SELECT * FROM "__EFMigrationsHistory"
+
+SELECT *
+FROM "SeatStatuses"
+WHERE "PassengerName" IS NOT NULL
+  AND "MobileNumber" = '01771207840';
+
+SELECT *
+FROM "Tickets"
+ORDER BY "BookingDate" DESC;
+
+
+  

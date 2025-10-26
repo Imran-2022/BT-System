@@ -38,7 +38,7 @@ export class SearchFormComponent {
     this.searchService.searchBuses(this.query).subscribe({
       next: (buses) => {
         const elapsed = Date.now() - startTime;
-        const delay = Math.max(3000 - elapsed, 0);
+        const delay = Math.max(1000 - elapsed, 0);
         setTimeout(() => {
           this.searchResults = buses;
           this.isLoading = false;
@@ -47,7 +47,7 @@ export class SearchFormComponent {
 
       error: (err) => {
         const elapsed = Date.now() - startTime;
-        const delay = Math.max(3000 - elapsed, 0);
+        const delay = Math.max(1000 - elapsed, 0);
 
         setTimeout(() => {
           console.error('Search API Error:', err);

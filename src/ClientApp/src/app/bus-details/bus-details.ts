@@ -105,8 +105,8 @@ export class BusDetailsComponent implements OnInit {
 
                 // Simulate minimum loading time
                 const elapsed = Date.now() - startTime;
-                if (elapsed < 3000) {
-                    await new Promise(resolve => setTimeout(resolve, 3000 - elapsed));
+                if (elapsed < 1000) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
                 }
 
                 this.isLoading = false;
@@ -114,8 +114,8 @@ export class BusDetailsComponent implements OnInit {
             error: async (err) => {
                 this.error = 'Failed to load bus details.';
                 const elapsed = Date.now() - startTime;
-                if (elapsed < 3000) {
-                    await new Promise(resolve => setTimeout(resolve, 3000 - elapsed));
+                if (elapsed < 1000) {
+                    await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
                 }
                 this.isLoading = false;
             }
