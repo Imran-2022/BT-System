@@ -64,10 +64,17 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             Func<int, Guid> NextGuid = (counter) => Guid.Parse(string.Format("30000000-0000-0000-0000-{0:D12}", counter));
 
             // 2. Define journey dates
+            // var journeyDates = new List<DateTime>();
+            // for (int i = 0; i < 5; i++)
+            // {
+            //     journeyDates.Add(new DateTime(2025, 10, 29, 0, 0, 0, DateTimeKind.Utc).AddDays(i));
+            // }
             var journeyDates = new List<DateTime>();
-            for (int i = 0; i < 5; i++)
+            DateTime startDate = new DateTime(2025, 10, 26, 0, 0, 0, DateTimeKind.Utc);
+            DateTime endDate = new DateTime(2025, 11, 30, 0, 0, 0, DateTimeKind.Utc);
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
             {
-                journeyDates.Add(new DateTime(2025, 10, 29, 0, 0, 0, DateTimeKind.Utc).AddDays(i));
+                journeyDates.Add(date);
             }
 
             // 3. Seed Seat Layouts
