@@ -23,7 +23,10 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             // Find the route matching the origin and destination
             var route = await _context.Routes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Origin == from && r.Destination == to);
+                .FirstOrDefaultAsync(r =>
+                    r.Origin.ToLower() == from.Trim().ToLower() &&
+                    r.Destination.ToLower() == to.Trim().ToLower());
+
 
             if (route == null)
             {
@@ -34,11 +37,11 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
             var schedules = await _context.BusSchedules
                 .AsNoTracking()
                 .Include(s => s.Route)
-                .Include(s => s.Bus).ThenInclude(b => b.Layout) 
+                .Include(s => s.Bus).ThenInclude(b => b.Layout)
                 .Include(s => s.SeatStatuses)
                 .Include(s => s.Route.BoardingPoints)
 
-                .Where(s => s.RouteId == route.RouteId && 
+                .Where(s => s.RouteId == route.RouteId &&
                             s.JourneyDate.Date == utcJourneyDate.Date)
 
                 .Select(s => new AvailableBusDto
@@ -134,7 +137,7 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
                     }).ToList()
             };
         }
-        
+
         // Returns booked seat numbers for a given schedule
         public Task<List<string>> GetBookedSeatNumbersAsync(Guid busScheduleId)
         {
