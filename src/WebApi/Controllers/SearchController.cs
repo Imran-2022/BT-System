@@ -12,10 +12,12 @@ namespace BusTicketReservationSystem.WebApi.Controllers
     public class SearchController : ControllerBase
     {
         private readonly ISearchService _searchService;
+        private readonly ILogger<SearchController> _logger;
 
-        public SearchController(ISearchService searchService)
+        public SearchController(ISearchService searchService, ILogger<SearchController> logger)
         {
             _searchService = searchService;
+            _logger = logger;
         }
 
         // GET: /api/Search?from=CityA&to=CityB&journeyDate=2025-10-25
@@ -32,15 +34,23 @@ namespace BusTicketReservationSystem.WebApi.Controllers
                 return BadRequest(new { message = "Both 'from' and 'to' cities are required." });
             }
 
-            var buses = await _searchService.SearchAvailableBusesAsync(from, to, journeyDate);
-
-            // Return 404 if no buses found
-            if (buses == null || buses.Count == 0)
+            try
             {
-                return NotFound(new { message = $"No buses found from {from} to {to} on {journeyDate.ToShortDateString()}." });
-            }
+                var buses = await _searchService.SearchAvailableBusesAsync(from, to, journeyDate);
 
-            return Ok(buses);
+                // Return 404 if no buses found
+                if (buses == null || buses.Count == 0)
+                {
+                    return NotFound(new { message = $"No buses found from {from} to {to} on {journeyDate.ToShortDateString()}." });
+                }
+
+                return Ok(buses);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Search API failed for from={From} to={To} date={Date}", from, to, journeyDate);
+                return StatusCode(503, new { message = "Service unavailable: database error or configuration issue." });
+            }
         }
 
         // GET: /api/Search/{id}
