@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://YOUR_RAILWAY_APP_URL/api'
+  apiUrl: 'https://bt-system.vercel.app/api'
 };
