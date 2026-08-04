@@ -60,19 +60,15 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             Guid routeDRId = Guid.Parse("10000000-0000-0000-0000-000000000001"); // Dhaka-Rajshahi
             Guid routeDDId = Guid.Parse("10000000-0000-0000-0000-000000000002"); // Dhaka-Dinajpur
             Guid routeDRaId = Guid.Parse("10000000-0000-0000-0000-000000000003"); // Dinajpur-Rangpur
+            Guid routeDRbId = Guid.Parse("10000000-0000-0000-0000-000000000004"); // Dhaka-Rangpur
 
             // Helper function to generate sequential GUIDs for buses and schedules
             Func<int, Guid> NextGuid = (counter) => Guid.Parse(string.Format("30000000-0000-0000-0000-{0:D12}", counter));
 
-            // 2. Define journey dates
-            // var journeyDates = new List<DateTime>();
-            // for (int i = 0; i < 5; i++)
-            // {
-            //     journeyDates.Add(new DateTime(2025, 10, 29, 0, 0, 0, DateTimeKind.Utc).AddDays(i));
-            // }
+            // 2. Define journey dates for Aug-Nov 2026
             var journeyDates = new List<DateTime>();
-            DateTime startDate = new DateTime(2025, 10, 26, 0, 0, 0, DateTimeKind.Utc);
-            DateTime endDate = new DateTime(2025, 11, 30, 0, 0, 0, DateTimeKind.Utc);
+            DateTime startDate = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime endDate = new DateTime(2026, 11, 30, 0, 0, 0, DateTimeKind.Utc);
             for (var date = startDate; date <= endDate; date = date.AddDays(1))
             {
                 journeyDates.Add(date);
@@ -91,7 +87,8 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             modelBuilder.Entity<Route>().HasData(
                 new Route { RouteId = routeDRId, Origin = "Dhaka", Destination = "Rajshahi" },
                 new Route { RouteId = routeDDId, Origin = "Dhaka", Destination = "Dinajpur" },
-                new Route { RouteId = routeDRaId, Origin = "Dinajpur", Destination = "Rangpur" }
+                new Route { RouteId = routeDRaId, Origin = "Dinajpur", Destination = "Rangpur" },
+                new Route { RouteId = routeDRbId, Origin = "Dhaka", Destination = "Rangpur" }
             );
 
             // 5. Seed Boarding/Dropping Points
@@ -118,22 +115,28 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             AddPoint(routeDRaId, "Dinajpur: Sadar", new TimeSpan(0, 0, 0), false);
             AddPoint(routeDRaId, "Rangpur: Medical Moor", new TimeSpan(2, 0, 0), true);
 
+            // Dhaka - Rangpur Points
+            AddPoint(routeDRbId, "Dhaka: Sayedabad", new TimeSpan(0, 0, 0), false);
+            AddPoint(routeDRbId, "Dhaka: Gabtali", new TimeSpan(0, 45, 0), false);
+            AddPoint(routeDRbId, "Rangpur: Central Station", new TimeSpan(7, 30, 0), true);
+            AddPoint(routeDRbId, "Rangpur: Stadium", new TimeSpan(8, 0, 0), true);
+
             modelBuilder.Entity<BoardingPoint>().HasData(points);
 
             /// 6. Seed Buses
             var allBuses = new List<Bus>();
             var allBusIds = new List<Guid>();
 
-            for (int i = 1; i <= 10; i++) // Create 10 unique buses
+            for (int i = 1; i <= 12; i++) // Create 12 unique buses
             {
                 Guid busId = NextGuid(i);
                 allBusIds.Add(busId);
-                bool isAC = i % 2 != 0; // Bus 1, 3, 5, 7, 9 are AC (using Green Line's 2x1 layout)
+                bool isAC = i % 2 != 0; // Odd buses are AC
                 Guid layoutId = isAC ? layout2x1Id : layout2x2Id;
                 string busType = isAC ? "AC" : "Non AC";
                 string companyName = isAC ? "Green Line" : "National Travels";
-                string busName = isAC ? $"GL AC Bus {i:D2}" : $"Bus {i:D2} Non-AC";
-                decimal basePrice = isAC ? 1200.00m : 700.00m;
+                string busName = isAC ? $"GL AC Bus {i:D2}" : $"NT Non-AC Bus {i:D2}";
+                decimal basePrice = isAC ? 1400.00m : 900.00m;
 
                 allBuses.Add(new Bus
                 {
@@ -153,8 +156,8 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             int scheduleCounter = 1;
             int busIndex = 0; // Index to cycle through the 10 unique buses
 
-            var allRouteIds = new[] { routeDRId, routeDDId, routeDRaId };
-            var startTimes = new[] { new TimeSpan(6, 0, 0), new TimeSpan(12, 0, 0), new TimeSpan(18, 0, 0) };
+            var allRouteIds = new[] { routeDRId, routeDDId, routeDRaId, routeDRbId };
+            var startTimes = new[] { new TimeSpan(7, 0, 0), new TimeSpan(13, 0, 0), new TimeSpan(19, 0, 0) };
 
             foreach (var date in journeyDates)
             {
@@ -178,36 +181,6 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             }
 
             modelBuilder.Entity<BusSchedule>().HasData(schedules);
-            
-            // 8. Seed Seat Statuses
-            var seatStatuses = new List<SeatStatus>();
-            int seatStatusCounter = 1;
-
-            foreach (var schedule in schedules)
-            {
-                var bus = allBuses.First(b => b.BusId == schedule.BusId);
-                decimal basePrice = bus.BasePrice;
-                var layout = (bus.BusSeatLayoutId == layout2x1Id ? acLayout : standardLayout).Split(';');
-
-                foreach (var row in layout)
-                {
-                    foreach (var seatNumber in row.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)))
-                    {
-                        seatStatuses.Add(new SeatStatus
-                        {
-                            // Ensure unique ID generation is maintained
-                            SeatStatusId = Guid.Parse(string.Format("50000000-0000-0000-0000-{0:D12}", seatStatusCounter++)),
-                            BusScheduleId = schedule.BusScheduleId,
-                            SeatNumber = seatNumber.Trim(),
-                            Status = 1, // Available
-                            Price = basePrice, // correct price from the Bus
-                            TicketId = null
-                        });
-                    }
-                }
-            }
-
-            modelBuilder.Entity<SeatStatus>().HasData(seatStatuses);
         }
     }
 }

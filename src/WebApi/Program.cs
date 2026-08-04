@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 using BusTicketReservationSystem.Application.Contracts.Repositories;
@@ -7,6 +8,7 @@ using BusTicketReservationSystem.Application.Contracts.Services;
 using BusTicketReservationSystem.Application.Services;
 using BusTicketReservationSystem.Infrastructure.Data;
 using BusTicketReservationSystem.Infrastructure.Repositories;
+using BusTicketReservationSystem.WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddDbContext<BusTicketDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("BusTicketReservationSystem.Infrastructure")
     )
+    .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
 );
 
 // 2. DEPENDENCY INJECTION
@@ -67,6 +70,8 @@ if (!string.IsNullOrWhiteSpace(port))
 }
 
 var app = builder.Build();
+
+await DatabaseSeeder.SeedAsync(app.Services);
 
 // 5. MIDDLEWARE
 
