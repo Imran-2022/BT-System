@@ -51,7 +51,15 @@ namespace BusTicketReservationSystem.Application.Services
             }
 
             // Retrieve schedule details including seat plan
-            return await _busScheduleRepository.GetBusScheduleAndSeatDetailsByIdAsync(scheduleId);
+            var schedule = await _busScheduleRepository.GetBusScheduleAndSeatDetailsByIdAsync(scheduleId);
+            if (schedule != null)
+            {
+                return schedule;
+            }
+
+            // If the requested schedule was generated from fallback search data,
+            // return the matching demo schedule details.
+            return DemoFallback.GetScheduleDetails(scheduleId);
         }
     }
 }

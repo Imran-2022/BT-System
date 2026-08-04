@@ -37,6 +37,8 @@ namespace BusTicketReservationSystem.Application.Services
             return list.Where(x => x.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
+        private static readonly List<AvailableBusDto> FallbackSchedules = CreateFallbackSchedules();
+
         public static List<AvailableBusDto> SearchBuses(string from, string to, DateTime journeyDate)
         {
             if (string.IsNullOrWhiteSpace(from) || string.IsNullOrWhiteSpace(to))
@@ -57,37 +59,57 @@ namespace BusTicketReservationSystem.Application.Services
                 return new List<AvailableBusDto>();
             }
 
-            var results = new List<AvailableBusDto>();
+            return FallbackSchedules
+                .Where(s => string.Equals(s.BoardingPoints.FirstOrDefault()?.LocationName, route.Origin, StringComparison.OrdinalIgnoreCase)
+                            && string.Equals(s.DroppingPoints.FirstOrDefault()?.LocationName, route.Destination, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        public static AvailableBusDto? GetScheduleDetails(Guid scheduleId)
+        {
+            return FallbackSchedules.FirstOrDefault(s => s.BusScheduleId == scheduleId);
+        }
+
+        private static List<AvailableBusDto> CreateFallbackSchedules()
+        {
+            var schedules = new List<AvailableBusDto>();
             var counter = 1;
-            foreach (var time in StartTimes)
+
+            foreach (var route in Routes)
             {
-                results.Add(new AvailableBusDto
+                foreach (var time in StartTimes)
                 {
-                    BusScheduleId = Guid.NewGuid(),
-                    CompanyName = counter % 2 == 0 ? "Green Line" : "National Travels",
-                    BusName = counter % 2 == 0 ? $"GL AC Bus {counter:D2}" : $"NT Non-AC Bus {counter:D2}",
-                    BusType = counter % 2 == 0 ? "AC" : "Non AC",
-                    StartTime = time,
-                    ArrivalTime = time.Add(TimeSpan.FromHours(5)),
-                    SeatsLeft = 20,
-                    Price = counter % 2 == 0 ? 1400m : 900m,
-                    CancellationPolicy = "Flexible",
-                    LayoutId = Guid.Empty,
-                    SeatConfiguration = "A1,A2;B1,B2;C1,C2",
-                    BoardingPoints = new List<PointOptionDto>
+                    schedules.Add(new AvailableBusDto
                     {
-                        new PointOptionDto { PointId = Guid.NewGuid(), LocationName = route.Origin, Time = time }
-                    },
-                    DroppingPoints = new List<PointOptionDto>
-                    {
-                        new PointOptionDto { PointId = Guid.NewGuid(), LocationName = route.Destination, Time = time.Add(TimeSpan.FromHours(5)) }
-                    },
-                    SeatLayout = new List<SeatStatusDto>()
-                });
-                counter++;
+                        BusScheduleId = Guid.Parse($"10000000-0000-0000-0000-0000000000{counter:D2}"),
+                        CompanyName = counter % 2 == 0 ? "Green Line" : "National Travels",
+                        BusName = counter % 2 == 0 ? $"GL AC Bus {counter:D2}" : $"NT Non-AC Bus {counter:D2}",
+                        BusType = counter % 2 == 0 ? "AC" : "Non AC",
+                        StartTime = time,
+                        ArrivalTime = time.Add(TimeSpan.FromHours(5)),
+                        SeatsLeft = 20,
+                        Price = counter % 2 == 0 ? 1400m : 900m,
+                        CancellationPolicy = "Flexible",
+                        LayoutId = Guid.Empty,
+                        SeatConfiguration = "A1,A2;B1,B2;C1,C2",
+                        BoardingPoints = new List<PointOptionDto>
+                        {
+                            new PointOptionDto { PointId = Guid.Parse($"20000000-0000-0000-0000-0000000000{counter:D2}"), LocationName = route.Origin, Time = time }
+                        },
+                        DroppingPoints = new List<PointOptionDto>
+                        {
+                            new PointOptionDto { PointId = Guid.Parse($"30000000-0000-0000-0000-0000000000{counter:D2}"), LocationName = route.Destination, Time = time.Add(TimeSpan.FromHours(5)) }
+                        },
+                        SeatLayout = Enumerable.Range(1, 16)
+                            .Select(i => new SeatStatusDto { SeatNumber = $"{(char)('A' + ((i - 1) / 4))}{((i - 1) % 4) + 1}", Status = 1, Price = counter % 2 == 0 ? 1400m : 900m })
+                            .ToList()
+                    });
+
+                    counter++;
+                }
             }
 
-            return results;
+            return schedules;
         }
     }
 }

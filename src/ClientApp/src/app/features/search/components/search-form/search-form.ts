@@ -22,12 +22,12 @@ export class SearchFormComponent {
   public query: SearchQuery = {
     from: 'Dhaka',
     to: 'Rajshahi',
-    // future date (today + 1 day)
-    // journeyDate: new Date(new Date().getTime() + (24 * 60 * 60 * 1000)).toISOString().substring(0, 10)
-    journeyDate: '2025-11-02' // Fixed date (YYYY-MM-DD)
+    // Default to tomorrow so the pre-filled search date stays in the supported range.
+    journeyDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
   };
 
   public searchResults: AvailableBus[] | null = null;
+  public hasSearchRun = false;
   public isLoading: boolean = false;
   public errorMessage: string | null = null;
 
@@ -68,6 +68,7 @@ export class SearchFormComponent {
     this.isLoading = true;
     this.errorMessage = null;
     this.searchResults = null;
+    this.hasSearchRun = true;
 
     const startTime = Date.now();
 

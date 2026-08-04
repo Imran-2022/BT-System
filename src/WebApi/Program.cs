@@ -84,16 +84,19 @@ if (!string.IsNullOrWhiteSpace(port))
 
 var app = builder.Build();
 
-try
+using (var scope = app.Services.CreateScope())
 {
-    await DatabaseSeeder.SeedAsync(app.Services);
-}
-catch (Exception ex)
-{
-    var logger = app.Services.GetService<ILogger<Program>>();
-    if (logger != null)
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    try
     {
-        logger.LogError(ex, "Database seeding failed at startup; continuing without seeding.");
+        var db = services.GetRequiredService<BusTicketDbContext>();
+        await db.Database.MigrateAsync();
+        await DatabaseSeeder.SeedAsync(services);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to initialize database on startup.");
     }
 }
 
