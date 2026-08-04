@@ -58,3 +58,11 @@ After deployment, verify the following:
 - Use environment variables for the production database connection.
 - Make sure the backend allows requests from your Netlify frontend domain via CORS.
 - Set Render to use the `src/WebApi/Dockerfile` and the `src` context root so build paths match.
+
+### Render file-watcher note
+Render containers run with low inotify limits on some plans which can cause startup errors like "The configured user limit (128) on the number of inotify instances has been reached." To avoid this:
+
+- Add the environment variable `DOTNET_USE_POLLING_FILE_WATCHER=1` in your Render service settings (or set it in the Dockerfile as `ENV DOTNET_USE_POLLING_FILE_WATCHER=1`).
+- Ensure `ASPNETCORE_ENVIRONMENT=Production` is set in Render as well.
+
+This forces the .NET runtime to use a polling-based watcher and prevents FileSystemWatcher from exhausting inotify instances.
