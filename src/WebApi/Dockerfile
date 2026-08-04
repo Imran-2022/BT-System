@@ -3,11 +3,9 @@ WORKDIR /src
 
 COPY . .
 
-WORKDIR /src/src
-RUN dotnet restore BusTicketReservationSystem.sln
+RUN dotnet restore src/BusTicketReservationSystem.sln
 
-WORKDIR /src/src/WebApi
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish src/WebApi/BusTicketReservationSystem.WebApi.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
