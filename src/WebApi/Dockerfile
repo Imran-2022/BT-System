@@ -3,7 +3,7 @@ WORKDIR /src
 
 COPY . .
 
-RUN dotnet restore BusTicketReservationSystem.sln
+RUN dotnet restore WebApi/BusTicketReservationSystem.WebApi.csproj
 
 RUN dotnet publish WebApi/BusTicketReservationSystem.WebApi.csproj -c Release -o /app/publish
 
