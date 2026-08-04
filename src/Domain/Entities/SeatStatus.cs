@@ -12,9 +12,14 @@ namespace BusTicketReservationSystem.Domain.Entities
 
         public string SeatNumber { get; set; } = default!; 
 
-        public int Status { get; set; } 
+        public int Status { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
+
+        //  decimal(18, 2) is a standard database type that specifies:
+        // 18 (Precision): The total number of digits the number can have (both before and after the decimal point).
+        // 2 (Scale): The number of digits to the right of the decimal point.
+
         public decimal Price { get; set; }
         // Passenger details linked to the seat status upon booking
         public string? PassengerName { get; set; }

@@ -35,6 +35,7 @@ public class BookingServiceTests
         {
             ScheduleId = Guid.NewGuid(),
             SeatBookings = new List<SeatBookingItemDto>()
+            // booking failed , when no seat selected.............
         };
 
         // Execute
@@ -58,6 +59,7 @@ public class BookingServiceTests
             {
                 new SeatBookingItemDto { SeatNumber = "A1", PassengerName = "Test", Price = 500.00M }
             }
+            // Does the system successfully complete a booking when everything is correct?
         };
 
         var successResponse = new BookingResponseDto
@@ -93,6 +95,7 @@ public class BookingServiceTests
             {
                 new SeatBookingItemDto { SeatNumber = bookedSeatNumber, PassengerName = "Test Passenger", Price = 500.00M }
             }
+            // Does the system prevent a customer from booking a seat that's already taken? (This is a crucial rule!)
         };
 
         // Mock a seat that is already booked

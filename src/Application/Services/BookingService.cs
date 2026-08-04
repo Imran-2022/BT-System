@@ -11,6 +11,9 @@ namespace BusTicketReservationSystem.Application.Services
         private readonly IBusScheduleRepository _busScheduleRepository;
         private readonly IBookingRepository _bookingRepository;
 
+            // _busScheduleRepository: Used only for looking up current data (like checking which seats are already booked).
+            // _bookingRepository: Used only for saving the final booking transaction.
+
         public BookingService(IBusScheduleRepository busScheduleRepository, IBookingRepository bookingRepository)
         {
             _busScheduleRepository = busScheduleRepository;

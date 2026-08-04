@@ -15,3 +15,9 @@ namespace BusTicketReservationSystem.Domain.Entities
         public BusSeatLayout Layout { get; set; } = default!;
     }
 }
+
+
+// readonly. 
+// non-nullable.
+// entitiy definations. 
+// Entity Framework Core (EF Core)

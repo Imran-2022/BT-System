@@ -6,8 +6,9 @@ namespace BusTicketReservationSystem.Infrastructure.Data
     public class BusTicketDbContext : DbContext
     {
         public BusTicketDbContext(DbContextOptions<BusTicketDbContext> options) : base(options) { }
-
+        
         // DbSets for all entities
+        // the tables in the underlying database.
         public DbSet<BusSchedule> BusSchedules { get; set; }
         public DbSet<Route> Routes { get; set; }
         public DbSet<Bus> Buses { get; set; }
@@ -29,9 +30,9 @@ namespace BusTicketReservationSystem.Infrastructure.Data
             modelBuilder.Entity<Ticket>().HasKey(t => t.TicketId);
 
             modelBuilder.Entity<Bus>()
-                .HasOne(b => b.Layout)
-                .WithMany(l => l.Buses)
-                .HasForeignKey(b => b.BusSeatLayoutId);
+                .HasOne(b => b.Layout) // A Bus has One Layout
+                .WithMany(l => l.Buses) // A Layout has Many Buses
+                .HasForeignKey(b => b.BusSeatLayoutId); //Bus to BusSeatLayout (One-to-Many): One layout can be used by many buses.
 
             modelBuilder.Entity<BoardingPoint>()
                 .HasOne(p => p.Route)

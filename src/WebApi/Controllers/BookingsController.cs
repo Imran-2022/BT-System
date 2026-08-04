@@ -4,8 +4,9 @@ using BusTicketReservationSystem.Application.Contracts.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
+// Marks the class as an ASP.NET Core Web API controller, enabling automatic features like routing and model validation.
 [Route("api/[controller]")]
-public class BookingsController : ControllerBase
+public class BookingsController : ControllerBase // inheritance. 
 {
     private readonly IBookingService _bookingService;
 
@@ -14,6 +15,9 @@ public class BookingsController : ControllerBase
     {
         _bookingService = bookingService;
     }
+
+    // The controller doesn't handle business logic or database access itself.
+    // It uses Dependency Injection (DI) to receive an instance of the IBookingService (the business layer). This ensures the controller remains lean, focusing only on HTTP concerns.
 
     // POST: /api/Bookings/BookSeat
     // Handles seat booking requests

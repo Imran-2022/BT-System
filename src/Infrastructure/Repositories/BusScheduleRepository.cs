@@ -1,3 +1,5 @@
+// responsible for all direct communication with the database using Entity Framework Core (EF Core).
+
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Dtos;
 using BusTicketReservationSystem.Infrastructure.Data;

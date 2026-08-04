@@ -21,6 +21,8 @@ builder.Services.AddDbContext<BusTicketDbContext>(options =>
 // 2. DEPENDENCY INJECTION
 // Booking
 builder.Services.AddScoped<IBookingService, BookingService>();
+// AddScoped: Means a new instance of the service/repository is created for every incoming web request, ensuring clean separation and state management.
+// What it does: This is the core of the layered architecture. It registers all Services and Repositories so that when a controller or service asks for an interface (e.g., IBookingService), the system knows to provide the concrete implementation (BookingService).
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 // Search
@@ -35,16 +37,34 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // 4. CORS POLICY (Allow Angular Access)
+var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]
+    ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowedOrigins", policy =>
     {
-        // For development, allowed all origins, methods, and headers.
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
     });
 });
+
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
 
 var app = builder.Build();
 
@@ -62,11 +82,13 @@ else
 }
 
 //  CORS Policy
-app.UseCors();
+app.UseCors("AllowedOrigins");
 app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// app.UseRouting() and app.MapControllers(): Directs incoming URLs (like /api/search) to the correct controller methods.
 
 // Simple test endpoint
 app.MapGet("/", () => "BT-System - Api is working Fine !");

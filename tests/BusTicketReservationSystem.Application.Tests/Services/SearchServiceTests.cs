@@ -24,6 +24,8 @@ public class SearchServiceTests
 
     [Fact]
     public async Task SearchAvailableBusesAsync_ReturnsSortedBuses_ByStartTime()
+    // When a customer searches for buses, are the results correctly sorted by the start time?
+    // It checks that when you search for  buses, they always appear in order from the earliest departure time to the latest.
     {
         // ARRANGE: Set up input and unsorted mock data
         var from = "Dhaka";
@@ -54,6 +56,8 @@ public class SearchServiceTests
 
     [Fact]
     public async Task SearchAvailableBusesAsync_ReturnsEmptyList_WhenJourneyDateIsPast()
+    // What it checks: Does the system prevent searches for dates that have already passed?
+    // It's like making sure the search engine doesn't even try to look for buses from a day that has already happened.
     {
         // ARRANGE: Use a past date
         var pastDate = DateTime.Today.AddDays(-1);

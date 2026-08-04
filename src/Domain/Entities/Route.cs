@@ -8,9 +8,11 @@ namespace BusTicketReservationSystem.Domain.Entities
         public Guid RouteId { get; set; }
         public string Origin { get; set; } = default!; // Dhaka
         public string Destination { get; set; } = default!; // Rajshahi
-        
+
         // Collection navigation property (used in search logic)
         public ICollection<BusSchedule> BusSchedules { get; set; } = new List<BusSchedule>();
+        // A list of all the planned trips (BusSchedule entities) that use this specific route. This links a route to the many times a bus runs on it.
         public ICollection<BoardingPoint> BoardingPoints { get; set; } = new List<BoardingPoint>();
+        // A list of all the pickup locations (BoardingPoint entities) available along this route. This tells travelers where they can catch the bus.
     }
 }

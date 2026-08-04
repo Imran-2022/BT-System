@@ -195,7 +195,7 @@ SELECT * FROM "BusSeatLayouts"
 SELECT * FROM "Buses"
 SELECT * FROM "Routes"
 SELECT * FROM "SeatStatuses"
-SELECT * FROM "Tickets"
+Delete FROM "Tickets"
 SELECT * FROM "__EFMigrationsHistory"
 
 SELECT *

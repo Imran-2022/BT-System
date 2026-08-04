@@ -12,12 +12,15 @@ namespace BusTicketReservationSystem.Application.Services
     {
         private readonly IBusScheduleRepository _busScheduleRepository;
 
+        // It relies on the _busScheduleRepository to fetch the raw list of available buses from the database.
+
         public SearchService(IBusScheduleRepository busScheduleRepository)
         {
             _busScheduleRepository = busScheduleRepository;
         }
 
         public async Task<List<AvailableBusDto>> SearchAvailableBusesAsync(string from, string to, DateTime journeyDate)
+        // Finds all buses running between two points on a specific date and ensures the results are usable.
         {
             // Return empty list for past journey dates
             if (journeyDate.Date < DateTime.Today.Date)
