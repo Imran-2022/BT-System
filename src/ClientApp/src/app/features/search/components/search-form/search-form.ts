@@ -14,16 +14,21 @@ import { SearchResultsComponent } from '../search-results/search-results';
 export class SearchFormComponent {
   private searchService = inject(SearchService);
   
-  // Autocomplete suggestion lists
+  // Autocomplete suggestion state
   public fromSuggestions: string[] = [];
   public toSuggestions: string[] = [];
+  public showFromSuggestions = false;
+  public showToSuggestions = false;
+
+  public minJourneyDate = '2026-08-01';
+  public maxJourneyDate = '2026-11-30';
 
   /** Default search criteria for quick testing */
   public query: SearchQuery = {
     from: 'Dhaka',
     to: 'Rajshahi',
-    // Default to tomorrow so the pre-filled search date stays in the supported range.
-    journeyDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+    // Default to today so the search form starts with the current date.
+    journeyDate: new Date().toISOString().substring(0, 10)
   };
 
   public searchResults: AvailableBus[] | null = null;
@@ -46,25 +51,57 @@ export class SearchFormComponent {
     const q = value?.trim() ?? '';
     if (q.length === 0) {
       this.fromSuggestions = [];
+      this.showFromSuggestions = false;
       return;
     }
-    this.searchService.getLocations(q).subscribe(list => this.fromSuggestions = list, () => this.fromSuggestions = []);
+
+    this.searchService.getLocations(q).subscribe(list => {
+      this.fromSuggestions = list;
+      this.showFromSuggestions = list.length > 0;
+    }, () => {
+      this.fromSuggestions = [];
+      this.showFromSuggestions = false;
+    });
   }
 
   public onToInput(value: string): void {
     const q = value?.trim() ?? '';
     if (q.length === 0) {
       this.toSuggestions = [];
+      this.showToSuggestions = false;
       return;
     }
-    this.searchService.getLocations(q).subscribe(list => this.toSuggestions = list, () => this.toSuggestions = []);
+
+    this.searchService.getLocations(q).subscribe(list => {
+      this.toSuggestions = list;
+      this.showToSuggestions = list.length > 0;
+    }, () => {
+      this.toSuggestions = [];
+      this.showToSuggestions = false;
+    });
   }
 
-  public selectFrom(value: string) { this.query.from = value; this.fromSuggestions = []; }
-  public selectTo(value: string) { this.query.to = value; this.toSuggestions = []; }
+  public selectFrom(value: string) {
+    this.query.from = value;
+    this.fromSuggestions = [];
+    this.showFromSuggestions = false;
+  }
+
+  public selectTo(value: string) {
+    this.query.to = value;
+    this.toSuggestions = [];
+    this.showToSuggestions = false;
+  }
 
   /** Handles the form submission and fetches available buses */
   public onSubmit(): void {
+    if (!this.query.journeyDate || this.query.journeyDate < this.minJourneyDate || this.query.journeyDate > this.maxJourneyDate) {
+      this.errorMessage = `Please choose a journey date between ${this.minJourneyDate} and ${this.maxJourneyDate}.`;
+      this.searchResults = [];
+      this.hasSearchRun = true;
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = null;
     this.searchResults = null;
