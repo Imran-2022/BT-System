@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 using BusTicketReservationSystem.Application.Contracts.Repositories;
 using BusTicketReservationSystem.Application.Contracts.Services;
@@ -83,7 +84,18 @@ if (!string.IsNullOrWhiteSpace(port))
 
 var app = builder.Build();
 
-await DatabaseSeeder.SeedAsync(app.Services);
+try
+{
+    await DatabaseSeeder.SeedAsync(app.Services);
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetService<ILogger<Program>>();
+    if (logger != null)
+    {
+        logger.LogError(ex, "Database seeding failed at startup; continuing without seeding.");
+    }
+}
 
 // 5. MIDDLEWARE
 
