@@ -12,6 +12,18 @@ using BusTicketReservationSystem.WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.Sources.Clear();
+    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+    config.AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false);
+    config.AddEnvironmentVariables();
+    if (args is not null)
+    {
+        config.AddCommandLine(args);
+    }
+});
+
 // 1. DATABASE CONTEXT SETUP
 builder.Services.AddDbContext<BusTicketDbContext>(options =>
     options.UseNpgsql(
