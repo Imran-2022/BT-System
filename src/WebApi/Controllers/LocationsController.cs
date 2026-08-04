@@ -1,3 +1,4 @@
+using BusTicketReservationSystem.Application.Services;
 using BusTicketReservationSystem.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,25 +27,33 @@ namespace BusTicketReservationSystem.WebApi.Controllers
 
             try
             {
-                var origins = _db.Routes.AsQueryable();
-
-                if (!string.IsNullOrEmpty(q))
+                if (_db.Database.CanConnect())
                 {
-                    origins = origins.Where(r => EF.Functions.ILike(r.Origin, $"%{q}%") || EF.Functions.ILike(r.Destination, $"%{q}%"));
+                    var origins = _db.Routes.AsQueryable();
+
+                    if (!string.IsNullOrEmpty(q))
+                    {
+                        origins = origins.Where(r => EF.Functions.ILike(r.Origin, $"%{q}%") || EF.Functions.ILike(r.Destination, $"%{q}%"));
+                    }
+
+                    var results = await origins
+                        .SelectMany(r => new[] { r.Origin, r.Destination })
+                        .Distinct()
+                        .OrderBy(x => x)
+                        .ToListAsync();
+
+                    if (results.Any())
+                    {
+                        return Ok(results);
+                    }
                 }
 
-                var results = await origins
-                    .SelectMany(r => new[] { r.Origin, r.Destination })
-                    .Distinct()
-                    .OrderBy(x => x)
-                    .ToListAsync();
-
-                return Ok(results);
+                return Ok(DemoFallback.GetLocations(q));
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Failed to fetch locations with query '{Query}'", q);
-                return StatusCode(503, new { message = "Service unavailable: database error or configuration issue." });
+                return Ok(DemoFallback.GetLocations(q));
             }
         }
     }

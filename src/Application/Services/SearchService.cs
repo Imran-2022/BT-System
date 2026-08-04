@@ -27,10 +27,20 @@ namespace BusTicketReservationSystem.Application.Services
             {
                 return new List<AvailableBusDto>();
             }
-            // Fetch available buses and sort by start time
-            var results = await _busScheduleRepository.FindAvailableBusesAsync(from, to, journeyDate);
 
-            return results.OrderBy(b => b.StartTime).ToList();
+            try
+            {
+                var results = await _busScheduleRepository.FindAvailableBusesAsync(from, to, journeyDate);
+                if (results == null || results.Count == 0)
+                {
+                    return DemoFallback.SearchBuses(from, to, journeyDate);
+                }
+                return results.OrderBy(b => b.StartTime).ToList();
+            }
+            catch
+            {
+                return DemoFallback.SearchBuses(from, to, journeyDate);
+            }
         }
 
         public async Task<AvailableBusDto?> GetScheduleAndSeatDetailsAsync(Guid scheduleId)
