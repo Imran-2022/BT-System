@@ -24,6 +24,18 @@ export class SearchService {
   }
 
   /**
+   * Fetch location suggestions (origins and destinations) from server.
+   * @param q search query text
+   */
+  getLocations(q: string = ''): Observable<string[]> {
+    let params = new HttpParams();
+    if (q && q.length > 0) {
+      params = params.append('q', q);
+    }
+    return this.apiService.get<string[]>('locations', params);
+  }
+
+  /**
   * Fetch detailed information for a specific bus schedule by ID.
   * @param id GUID of the bus schedule.
   * @returns Observable of a single AvailableBus object.

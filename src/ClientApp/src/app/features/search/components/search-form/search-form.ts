@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchService } from '../../services/search';
@@ -13,6 +13,10 @@ import { SearchResultsComponent } from '../search-results/search-results';
 })
 export class SearchFormComponent {
   private searchService = inject(SearchService);
+  
+  // Autocomplete suggestion lists
+  public fromSuggestions: string[] = [];
+  public toSuggestions: string[] = [];
 
   /** Default search criteria for quick testing */
   public query: SearchQuery = {
@@ -26,6 +30,38 @@ export class SearchFormComponent {
   public searchResults: AvailableBus[] | null = null;
   public isLoading: boolean = false;
   public errorMessage: string | null = null;
+
+  ngOnInit(): void {
+    // Prime suggestions (empty query returns all known locations)
+    this.searchService.getLocations('').subscribe(list => {
+      this.fromSuggestions = list;
+      this.toSuggestions = list;
+    }, err => {
+      // ignore suggestion errors
+      console.warn('Failed to load location suggestions', err);
+    });
+  }
+
+  public onFromInput(value: string): void {
+    const q = value?.trim() ?? '';
+    if (q.length === 0) {
+      this.fromSuggestions = [];
+      return;
+    }
+    this.searchService.getLocations(q).subscribe(list => this.fromSuggestions = list, () => this.fromSuggestions = []);
+  }
+
+  public onToInput(value: string): void {
+    const q = value?.trim() ?? '';
+    if (q.length === 0) {
+      this.toSuggestions = [];
+      return;
+    }
+    this.searchService.getLocations(q).subscribe(list => this.toSuggestions = list, () => this.toSuggestions = []);
+  }
+
+  public selectFrom(value: string) { this.query.from = value; this.fromSuggestions = []; }
+  public selectTo(value: string) { this.query.to = value; this.toSuggestions = []; }
 
   /** Handles the form submission and fetches available buses */
   public onSubmit(): void {
