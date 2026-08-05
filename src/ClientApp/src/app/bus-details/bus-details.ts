@@ -128,9 +128,10 @@ export class BusDetailsComponent implements OnInit {
     private processSeatData(seatLayout: SeatStatus[]): void {
         this.selectedSeats = []; // Reset selected seats
         this.seatRows = [];
-        const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-
+        // Dynamically determine row letters from seat numbers (supports A..L etc.)
         seatLayout.sort((a, b) => a.seatNumber.localeCompare(b.seatNumber, undefined, { numeric: true, sensitivity: 'base' }));
+
+        const rows = Array.from(new Set(seatLayout.map(s => s.seatNumber.replace(/[0-9]/g, '')))).sort();
 
         rows.forEach(rowLetter => {
             const rowSeats = seatLayout

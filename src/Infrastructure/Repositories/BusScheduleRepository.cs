@@ -141,9 +141,13 @@ namespace BusTicketReservationSystem.Infrastructure.Repositories
         }
 
         // Returns booked seat numbers for a given schedule
-        public Task<List<string>> GetBookedSeatNumbersAsync(Guid busScheduleId)
+        public async Task<List<string>> GetBookedSeatNumbersAsync(Guid busScheduleId)
         {
-            return Task.FromResult(new List<string>());
+            return await _context.SeatStatuses
+                .AsNoTracking()
+                .Where(s => s.BusScheduleId == busScheduleId && s.Status == (int)SeatStatusCode.Booked)
+                .Select(s => s.SeatNumber)
+                .ToListAsync();
         }
     }
 
