@@ -117,10 +117,14 @@ else
 app.UseCors("AllowedOrigins");
 app.UseRouting();
 app.UseAuthorization();
+// Serve static frontend files (if present in wwwroot)
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapControllers();
 
-// app.UseRouting() and app.MapControllers(): Directs incoming URLs (like /api/search) to the correct controller methods.
+// Serve SPA fallback to index.html for client-side routing
+app.MapFallbackToFile("index.html");
 
 // Simple test endpoint
 app.MapGet("/", () => "BT-System - Api is working Fine !");
