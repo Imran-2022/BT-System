@@ -52,10 +52,28 @@ public static class DatabaseSeeder
         }
         await context.SaveChangesAsync();
 
-        // If schedules already exist, skip creating full demo data (but layouts were ensured above)
-        if (await context.BusSchedules.AnyAsync())
+        // If current scheduled data already exists, do not reseed.
+        var seedStartDate = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc);
+        var seedEndDate = new DateTime(2026, 11, 30, 0, 0, 0, DateTimeKind.Utc);
+
+        var hasCurrentSchedules = await context.BusSchedules
+            .AnyAsync(s => s.JourneyDate >= seedStartDate && s.JourneyDate <= seedEndDate);
+
+        if (hasCurrentSchedules)
         {
             return;
+        }
+
+        // If the database only contains old seeded data, clear stale seed data so it can be replaced.
+        if (await context.BusSchedules.AnyAsync())
+        {
+            context.SeatStatuses.RemoveRange(context.SeatStatuses);
+            context.Tickets.RemoveRange(context.Tickets);
+            context.BusSchedules.RemoveRange(context.BusSchedules);
+            context.Buses.RemoveRange(context.Buses);
+            context.BoardingPoints.RemoveRange(context.BoardingPoints);
+            context.Routes.RemoveRange(context.Routes);
+            await context.SaveChangesAsync();
         }
 
         var routeDRId = Guid.Parse("10000000-0000-0000-0000-000000000001");
@@ -226,7 +244,6 @@ public static class DatabaseSeeder
             }
         }
 
-        await context.BusSeatLayouts.AddRangeAsync(layouts);
         await context.Routes.AddRangeAsync(routes);
         await context.BoardingPoints.AddRangeAsync(points);
         await context.Buses.AddRangeAsync(buses);
