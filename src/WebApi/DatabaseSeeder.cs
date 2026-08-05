@@ -13,18 +13,8 @@ public static class DatabaseSeeder
         using var scope = services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<BusTicketDbContext>();
 
-        if (await context.BusSchedules.AnyAsync())
-        {
-            return;
-        }
-
         var layout2x2Id = Guid.Parse("A0000000-0000-0000-0000-000000000001");
         var layout2x1Id = Guid.Parse("A0000000-0000-0000-0000-000000000002");
-
-        var routeDRId = Guid.Parse("10000000-0000-0000-0000-000000000001");
-        var routeDDId = Guid.Parse("10000000-0000-0000-0000-000000000002");
-        var routeDRaId = Guid.Parse("10000000-0000-0000-0000-000000000003");
-        var routeDRbId = Guid.Parse("10000000-0000-0000-0000-000000000004");
 
         // Build seat configuration strings programmatically to support larger layouts:
         // 4-column layout: 10 rows (A-J) -> 4 * 10 = 40 seats
@@ -42,6 +32,36 @@ public static class DatabaseSeeder
             new BusSeatLayout { BusSeatLayoutId = layout2x2Id, LayoutName = "2x2 Standard", SeatsPerRowCount = 4, TotalSeats = 40, SeatConfiguration = seatConfig4 },
             new BusSeatLayout { BusSeatLayoutId = layout2x1Id, LayoutName = "2x1 AC Business", SeatsPerRowCount = 3, TotalSeats = 36, SeatConfiguration = seatConfig3 }
         };
+
+        // Ensure layouts are present/up-to-date (upsert)
+        foreach (var layout in layouts)
+        {
+            var existing = await context.BusSeatLayouts.FindAsync(layout.BusSeatLayoutId);
+            if (existing == null)
+            {
+                await context.BusSeatLayouts.AddAsync(layout);
+            }
+            else
+            {
+                existing.LayoutName = layout.LayoutName;
+                existing.SeatConfiguration = layout.SeatConfiguration;
+                existing.SeatsPerRowCount = layout.SeatsPerRowCount;
+                existing.TotalSeats = layout.TotalSeats;
+                context.BusSeatLayouts.Update(existing);
+            }
+        }
+        await context.SaveChangesAsync();
+
+        // If schedules already exist, skip creating full demo data (but layouts were ensured above)
+        if (await context.BusSchedules.AnyAsync())
+        {
+            return;
+        }
+
+        var routeDRId = Guid.Parse("10000000-0000-0000-0000-000000000001");
+        var routeDDId = Guid.Parse("10000000-0000-0000-0000-000000000002");
+        var routeDRaId = Guid.Parse("10000000-0000-0000-0000-000000000003");
+        var routeDRbId = Guid.Parse("10000000-0000-0000-0000-000000000004");
 
         var routes = new RouteEntity[]
         {

@@ -74,13 +74,20 @@ namespace BusTicketReservationSystem.Infrastructure.Data
                 journeyDates.Add(date);
             }
 
-            // 3. Seed Seat Layouts
-            string standardLayout = string.Join(";", new[] { "A1,A2,A3,A4", "B1,B2,B3,B4", "C1,C2,C3,C4", "D1,D2,D3,D4", "E1,E2,E3,E4", "F1,F2,F3,F4", "G1,G2,G3,G4", "H1,H2,H3,H4" });
-            string acLayout = string.Join(";", new[] { "A1,A2,A3", "B1,B2,B3", "C1,C2,C3", "D1,D2,D3", "E1,E2,E3", "F1,F2,F3", "G1,G2,G3", "H1,H2,H3" });
+            // 3. Seed Seat Layouts (updated to larger configurations)
+            // 4-column layout: 10 rows (A-J) -> 4 * 10 = 40 seats
+            var seatConfig4 = string.Join(";",
+                Enumerable.Range(0, 10)
+                    .Select(i => string.Join(",", Enumerable.Range(1, 4).Select(n => $"{(char)('A' + i)}{n}"))));
+
+            // 3-column layout: 12 rows (A-L) -> 3 * 12 = 36 seats
+            var seatConfig3 = string.Join(";",
+                Enumerable.Range(0, 12)
+                    .Select(i => string.Join(",", Enumerable.Range(1, 3).Select(n => $"{(char)('A' + i)}{n}"))));
 
             modelBuilder.Entity<BusSeatLayout>().HasData(
-                new BusSeatLayout { BusSeatLayoutId = layout2x2Id, LayoutName = "2x2 Standard", SeatsPerRowCount = 4, TotalSeats = 32, SeatConfiguration = standardLayout },
-                new BusSeatLayout { BusSeatLayoutId = layout2x1Id, LayoutName = "2x1 AC Business", SeatsPerRowCount = 3, TotalSeats = 24, SeatConfiguration = acLayout }
+                new BusSeatLayout { BusSeatLayoutId = layout2x2Id, LayoutName = "2x2 Standard", SeatsPerRowCount = 4, TotalSeats = 40, SeatConfiguration = seatConfig4 },
+                new BusSeatLayout { BusSeatLayoutId = layout2x1Id, LayoutName = "2x1 AC Business", SeatsPerRowCount = 3, TotalSeats = 36, SeatConfiguration = seatConfig3 }
             );
 
             // 4. Seed Routes
